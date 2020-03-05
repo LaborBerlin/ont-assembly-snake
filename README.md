@@ -4,7 +4,7 @@ A snakemake-wrapper for creating *de novo* bacterial genome assemblies from Oxfo
 Combinations of assemblers and polishing tools can be applied to multiple samples at once.
 
 Currently included programs:
-* [Flye](https://github.com/fenderglass/Flye)
+* [flye](https://github.com/fenderglass/Flye)
 * [raven](https://github.com/lbcb-sci/raven)
 * [racon](https://github.com/lbcb-sci/racon)
 * [medaka](https://github.com/nanoporetech/medaka)
@@ -58,6 +58,11 @@ Consecutive steps need to be separated by a plus.
 Sample names and assembly+polishing need to be separated by an underscore.
 NB: This also means that sample names must not contain underscores.
 
+Both flye and raven do automatic polishing after assembly (by default 1 round
+in flye and 4 rounds of racon in raven). These defaults can be changed by
+appending a number after the assembler name (e.g. `flye2`), and a 0 would
+switch off the automatic polishing.
+
 For running racon polishing multiple times, append a number specifying the
 number of iterations, for example `sample1_flye+racon4` will run racon 4 times
 on the flye assembly.
@@ -69,9 +74,10 @@ We want to create various different assemblies for a later comparison, e.g.
 with the [score-assemblies](https://github.com/pmenzel/score-assemblies)
 snakemake pipeline.
 
-For sample 1, the assembly should be done with flye, following by polishing the
-assembly with racon once and 4 times, whereas the latter also being polished
-with medaka. So we end up with 4 different assemblies for sample1.
+For sample 1, the assembly should be done with flye (including one round of
+interal polishing), followed by polishing the assembly with racon twice,
+which in turn is again polished with medaka
+Therefore, we end up with 3 different assemblies for sample1.
 
 Sample 2 should be assembled by raven including 2 internal steps of racon polishing,
 followed by medaka as well as medaka and pilon (using the Illumina reads) polishing.
@@ -87,9 +93,8 @@ followed by medaka as well as medaka and pilon (using the Illumina reads) polish
 │
 └── assemblies
     ├── sample1_flye
-    ├── sample1_flye+racon
-    ├── sample1_flye+racon4
-    ├── sample1_flye+racon4+medaka
+    ├── sample1_flye+racon2
+    ├── sample1_flye+racon2+medaka
     ├── sample2_raven2
     ├── sample2_raven2+medaka
     └── sample2_raven2+medaka+pilon
@@ -111,8 +116,7 @@ Therefore, it is enough to manually create the following folders for the above e
 │   └── sample2_R2.fastq
 │
 └── assemblies
-    ├── sample1_flye+racon
-    ├── sample1_flye+racon4+medaka
+    ├── sample1_flye+racon2+medaka
     └── sample2_raven2+medaka+pilon
 ```
 

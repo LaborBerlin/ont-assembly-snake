@@ -4,26 +4,18 @@ shell.executable("/bin/bash")
 genome_size = "6m"
 if config.get('genome_size',False):
   genome_size = config['genome_size']
-
 print("Genome size = " + genome_size)
 
 medaka_model = "r941_min_high_g344"
 if config.get('medaka_model',False):
   medaka_model = config['medaka_model']
-
 print("Medaka model = " + medaka_model)
-
-flye_iterations = "4"
-if config.get('flye_iterations',False):
-  flye_iterations = config['flye_iterations']
-
-print("Flye iterations = " + flye_iterations)
 
 wildcard_constraints:
   sample = "[^_]+",
   assembly = "[^_]+",
   sample_assembly = "[^/]+",
-	num = "[1-9]"
+	num = "[0-9]"
 
 sample_assemblies, = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 
@@ -33,6 +25,7 @@ rule all:
 	input:
 		list_outputs
 
+#fly with default number of polishing rounds (=1 in flye v2.7.0)
 rule flye:
 	threads: 5
 	input:
@@ -42,11 +35,24 @@ rule flye:
 	log: "assemblies/{sample}_flye/log.txt"
 	shell:
 		"""
-		flye --nano-raw {input.fq} -g {genome_size} -o assemblies/{wildcards.sample}_flye/ -t {threads} -i {flye_iterations} 2>{log}
+		flye --nano-raw {input.fq} -g {genome_size} -o assemblies/{wildcards.sample}_flye/ -t {threads} 2>{log}
 		mv assemblies/{wildcards.sample}_flye/assembly.fasta {output.fa}
 		"""
 
-#for running raven without racon polishing
+rule flyeX:
+	threads: 5
+	input:
+		fq = "fastq-ont/{sample}.fastq",
+	output:
+		fa = "assemblies/{sample}_flye{num}/output.fa"
+	log: "assemblies/{sample}_flye{num}/log.txt"
+	shell:
+		"""
+		flye --nano-raw {input.fq} -g {genome_size} -o assemblies/{wildcards.sample}_flye{wildcards.num}/ -t {threads} -i {wildcards.num} 2>{log}
+		mv assemblies/{wildcards.sample}_flye{wildcards.num}/assembly.fasta {output.fa}
+		"""
+
+#for running raven with default number of racon-polishing rounds (=4 in raven v0.0.8)
 rule raven:
 	threads: 5
 	input:
@@ -56,10 +62,10 @@ rule raven:
 	log: "assemblies/{sample}_raven/log.txt"
 	shell:
 		"""
-		raven -p 0 -t {threads} {input.fq} >{output.fa} 2>{log}
+		raven -t {threads} {input.fq} >{output.fa} 2>{log}
 		"""
 
-#for running raven with racon polishing
+#for running raven with racon polishing X times
 rule ravenX:
 	threads: 5
 	input:
@@ -99,7 +105,7 @@ rule raconX:
 	log: "assemblies/{sample}_{assembly}+racon{num}/log.txt"
 	shell:
 		"""
-		DIR_temp=$(mktemp -d --suffix=.raconnn)
+		DIR_temp=$(mktemp -d --suffix=.raconX)
 		trap "rm -r $DIR_temp" EXIT
 
 		cp {input.prev_fa} $DIR_temp/prev.fa
