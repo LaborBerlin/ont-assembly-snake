@@ -5,15 +5,19 @@ genome_size = "6m"
 if config.get('genome_size',False):
   genome_size = config['genome_size']
 
-print(genome_size)
+print("Genome size = " + genome_size)
 
 medaka_model = "r941_min_high_g344"
 if config.get('medaka_model',False):
   medaka_model = config['medaka_model']
 
-flye_iterations = 4
+print("Medaka model = " + medaka_model)
+
+flye_iterations = "4"
 if config.get('flye_iterations',False):
   flye_iterations = config['flye_iterations']
+
+print("Flye iterations = " + flye_iterations)
 
 wildcard_constraints:
   sample = "[^_]+",
@@ -42,6 +46,7 @@ rule flye:
 		mv assemblies/{wildcards.sample}_flye/assembly.fasta {output.fa}
 		"""
 
+#for running raven without racon polishing
 rule raven:
 	threads: 5
 	input:
@@ -51,7 +56,7 @@ rule raven:
 	log: "assemblies/{sample}_raven/log.txt"
 	shell:
 		"""
-		raven -t {threads} {input.fq} >{output.fa} 2>{log}
+		raven -p 0 -t {threads} {input.fq} >{output.fa} 2>{log}
 		"""
 
 #for running raven with racon polishing
