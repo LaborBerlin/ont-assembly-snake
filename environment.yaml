@@ -1,0 +1,16 @@
+name: ont-assembly-snake
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::snakemake=5.10.0
+  - bioconda::raven-assembler=0.0.8
+  - bioconda::medaka=0.11.5
+  - bioconda::flye=2.7
+  - bioconda::racon=1.4.10
+  - bioconda::bwa=0.7.17
+  - bioconda::samtools=1.9
+  - bioconda::pilon=1.23
+
