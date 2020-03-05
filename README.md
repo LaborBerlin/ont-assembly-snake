@@ -1,6 +1,6 @@
 # ont-assembly-snake
 
-A snakemake-wrapper for creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT)sequencing data.
+A snakemake-wrapper for creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data.
 Combinations of assemblers and polishing tools can be applied to multiple samples at once.
 
 Currently included programs:
@@ -9,6 +9,24 @@ Currently included programs:
 * [racon](https://github.com/lbcb-sci/racon)
 * [medaka](https://github.com/nanoporetech/medaka)
 * [pilon](https://github.com/broadinstitute/pilon/wiki)
+
+## Quick start
+```
+# Install
+git clone https://github.com/pmenzel/ont-assembly-snake.git
+conda config --add channels bioconda
+conda env create -n ont-assembly-snake --file ont-assembly-snake/environment.yaml
+source activate ont-assembly-snake
+
+# Prepare data
+mkdir fastq-ont
+cp /data/my_sample/ont_reads.fastq fastq-ont/mysample.fastq
+
+# Declare desired assembly + polishing and run workflow
+mkdir -p assemblies/mysample_flye+raven2+medaka
+snakemake -s ont-assembly-snake/Snakefile --cores 20 --config genome_size=5m
+```
+
 
 ## Installation
 Clone repository, for example:
