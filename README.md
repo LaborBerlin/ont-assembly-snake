@@ -23,7 +23,8 @@ mkdir fastq-ont
 cp /data/my_sample/ont_reads.fastq fastq-ont/mysample.fastq
 
 # Declare desired assembly + polishing and run workflow
-mkdir -p assemblies/mysample_flye+raven2+medaka
+mkdir -p assemblies/mysample_flye+racon2+medaka
+mkdir -p assemblies/mysample_raven2+medaka
 snakemake -s ont-assembly-snake/Snakefile --cores 20 --config genome_size=5m
 ```
 
