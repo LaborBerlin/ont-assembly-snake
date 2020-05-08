@@ -130,16 +130,20 @@ snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20
 
 The assemblies are contained in the files `output.fa` in each folder.
 
-
 Following additional configuration options can be passed to snakemake:
 
 * `genome_size` (default: "6m"), used by flye
-* `flye_iterations` (default: 4), number of polishing iterations in flye
-* `medaka_model` (default: "r941_min_high_g344"), used by medaka
+* `medaka_model`, for specifying a medaka model to be used for all samples
+* `map_medaka_model`, for specifying a tab-separated file with two columns mapping samples to medaka models
 
 Options are specified using snakemake's `--config` parameter, for example:
 
 ```
-snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20 --config genome_size=5m
+snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20 --config map_medaka_model=map_medaka.tsv genome_size=5m
+```
+where `map_medaka.tsv` contains, for example, the two columns:
+```
+sample1     r941_min_high_g330
+sample2     r941_min_high_g351
 ```
 

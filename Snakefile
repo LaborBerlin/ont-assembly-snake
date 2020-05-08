@@ -1,4 +1,5 @@
 from glob import glob
+import pandas as pd
 shell.executable("/bin/bash")
 
 genome_size = "6m"
@@ -6,10 +7,17 @@ if config.get('genome_size',False):
   genome_size = config['genome_size']
 print("Genome size = " + genome_size)
 
-medaka_model = "r941_min_high_g344"
+medaka_model = None
 if config.get('medaka_model',False):
   medaka_model = config['medaka_model']
-print("Medaka model = " + medaka_model)
+  print("Medaka model = " + medaka_model)
+
+
+map_medaka_model = None
+if config.get('map_medaka_model',False):
+  medaka_model_file = config['map_medaka_model']
+  table = pd.read_csv(medaka_model_file, sep='\t', lineterminator='\n', header=None)
+  map_medaka_model = dict(zip(table[0], table[1]))
 
 wildcard_constraints:
   sample = "[^_]+",
@@ -121,6 +129,18 @@ rule raconX:
 		mv $DIR_temp/prev.fa {output.fa}
 		"""
 
+def get_model_for_sample(wildcards):
+  if medaka_model is not None:
+    return "-m " + medaka_model
+  else:
+    if map_medaka_model is not None:
+      if map_medaka_model.get(wildcards.sample,False):
+        return "-m " + map_medaka_model.get(wildcards.sample,False)
+      else:
+        return ""
+    else:
+      return ""
+
 rule medaka:
 	threads: 5
 	input:
@@ -128,10 +148,13 @@ rule medaka:
 		fq = "fastq-ont/{sample}.fastq"
 	output:
 		"assemblies/{sample}_{assembly}+medaka/output.fa"
+	params:
+		model = get_model_for_sample
 	log: "assemblies/{sample}_{assembly}+medaka/log.txt"
+	message: "Medaka: {wildcards.sample}, {wildcards.assembly}, {params.model}"
 	shell:
 		"""
-		medaka_consensus -i {input.fq} -d {input.prev_fa} -o assemblies/{wildcards.sample}_{wildcards.assembly}+medaka -t {threads} -m {medaka_model} >{log} 2>&1
+		medaka_consensus -f -i {input.fq} -d {input.prev_fa} -o assemblies/{wildcards.sample}_{wildcards.assembly}+medaka -t {threads} {params.model} >{log} 2>&1
 		mv assemblies/{wildcards.sample}_{wildcards.assembly}+medaka/consensus.fasta assemblies/{wildcards.sample}_{wildcards.assembly}+medaka/output.fa
 		"""
 
