@@ -64,6 +64,22 @@ rule filtlongX:
 		filtlong --min_length {filtlong_min_read_length} -t {wildcards.num}000000 {input} > {output} 2>{log}
 		"""
 
+rule filtlongMql:
+	threads: 1
+	wildcard_constraints:
+		mb = "[0-9]+",
+		qweight = "[0-9]+",
+		lweight = "[0-9]+"
+	input:
+		"fastq-ont/{sample}.fastq"
+	output:
+		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight}.fastq"
+	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight}_log.txt"
+	shell:
+		"""
+		filtlong --min_length {filtlong_min_read_length} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
+		"""
+
 #flye with default number of polishing rounds (=1 in flye v2.7.0)
 rule flye:
 	threads: 5
@@ -165,8 +181,9 @@ def get_model_for_sample(wildcards):
     return "-m " + medaka_model
   else:
     if map_medaka_model is not None:
-      if map_medaka_model.get(wildcards.sample,False):
-        return "-m " + map_medaka_model.get(wildcards.sample,False)
+      sample_base = wildcards.sample.split("+",1)[0]
+      if map_medaka_model.get(sample_base,False):
+        return "-m " + map_medaka_model.get(sample_base,False)
       else:
         return ""
     else:
