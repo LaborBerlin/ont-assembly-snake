@@ -6,12 +6,12 @@ shell.executable("/bin/bash")
 filtlong_min_read_length = "1000"
 if config.get('filtlong_min_read_length',False):
   filtlong_min_read_length = config['filtlong_min_read_length']
-print("filtlong min read length = " + filtlong_min_read_length)
+print("filtlong min. read length = " + filtlong_min_read_length)
 
 genome_size = "6m"
 if config.get('genome_size',False):
   genome_size = config['genome_size']
-print("Genome size = " + genome_size)
+print("genome size = " + genome_size)
 
 medaka_model = None
 if config.get('medaka_model',False):
@@ -130,7 +130,7 @@ rule racon:
 	shell:
 		"""
 		minimap2 -ax map-ont -t {threads} {input.prev_fa} {input.fq} > {output.sam} 2>{log}
-		racon --threads {threads} --include-unpolished {input.fq} {output.sam} {input.prev_fa} > {output.fa}
+		racon --threads {threads} --include-unpolished {input.fq} {output.sam} {input.prev_fa} > {output.fa} 2>>{log}
 		"""
 
 #for running racon multiple iterations

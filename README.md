@@ -23,16 +23,18 @@ conda activate ont-assembly-snake
 mkdir fastq-ont assemblies
 cp /path/to//my/data/my_sample/ont_reads.fastq fastq-ont/mysample.fastq
 
-# Declare desired assembly + polishing and run workflow
+# Declare desired combination of read filtering, assembly and polishing
 mkdir assemblies/mysample_flye+racon2+medaka
 mkdir assemblies/mysample+filtlong500_flye+racon2+medaka
 mkdir assemblies/mysample_raven2+medaka
+
+# Run workflow
 snakemake -s ont-assembly-snake/Snakefile --cores 20 --config genome_size=5m
 ```
 
 
 ## Installation
-Clone repository, for example:
+Clone repository, for example into the existing folder `/opt/software/`:
 ```
 git clone https://github.com/pmenzel/ont-assembly-snake.git /opt/software/ont-assembly-snake
 ```
@@ -43,21 +45,21 @@ conda env create -n ont-assembly-snake --file /opt/software/ont-assembly-snake/e
 ```
 and activate environment:
 ```
-source activate ont-assembly-snake
+conda activate ont-assembly-snake
 ```
 
 ## Usage
 First, prepare a folder called `fastq-ont` containing the sequencing reads as
-one fastq file per sample.
-For polishing with Pilon using Illumina reads, the folder `fastq-illumina` must contain
-those reads using `_R[12].fastq` suffixes.
+one fastq file per sample, e.g. `fastq-ont/sample1.fastq`.
+For polishing with pilon using Illumina reads, the folder `fastq-illumina` must contain
+those reads using `_R[12].fastq` suffixes, e.g. `fastq-illumina/sample1_R1.fastq` and `fastq-illumina/sample1_R2.fastq`.
 
 Next, create a folder `assemblies` and inside create empty folders specifying
-combinations of the desired assembly and polishing steps.
+combinations of the desired combinations of read filtering, assembly and polishing steps.
 
-Consecutive steps need to be separated by a plus.
+Consecutive assembly and polishing steps need to be separated by a plus.
 
-Sample names and assembly+polishing need to be separated by an underscore.
+Read names and assembly+polishing need to be separated by an underscore.
 NB: This also means that sample names must not contain underscores.
 
 Both flye and raven do automatic polishing after assembly (by default 1 round
@@ -85,7 +87,7 @@ polishing), followed by polishing the assembly with racon twice,
 which in turn is again polished with medaka.
 Sample 2 should be assembled by raven including two internal rounds polishing (raven uses racon internally),
 followed by medaka and pilon (using the Illumina reads) polishing.
-We also want to reduce the ONT reads of sample 1 down to only include the highest quality reads down to 500Mb
+We also want to filter the ONT reads of sample 1 to only include the highest quality reads to a total of 500Mb
 using Filtlong and apply the same assembly and polishing protocol.
 ```
 .
