@@ -2,6 +2,12 @@ from glob import glob
 import pandas as pd
 shell.executable("/bin/bash")
 
+
+filtlong_min_read_length = "1000"
+if config.get('filtlong_min_read_length',False):
+  filtlong_min_read_length = config['filtlong_min_read_length']
+print("filtlong min read length = " + filtlong_min_read_length)
+
 genome_size = "6m"
 if config.get('genome_size',False):
   genome_size = config['genome_size']
@@ -23,7 +29,7 @@ wildcard_constraints:
   sample = "[^_]+",
   assembly = "[^_]+",
   sample_assembly = "[^/]+",
-	num = "[0-9]"
+	num = "[0-9]+"
 
 sample_assemblies, = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 
@@ -33,7 +39,32 @@ rule all:
 	input:
 		list_outputs
 
-#fly with default number of polishing rounds (=1 in flye v2.7.0)
+
+rule filtlong:
+	threads: 1
+	input:
+		"fastq-ont/{sample}.fastq"
+	output:
+		"fastq-ont/{sample}+filtlong.fastq"
+	log: "fastq-ont/{sample}_filtlong_log.txt"
+	shell:
+		"""
+		filtlong --min_length {filtlong_min_read_length} {input} > {output} 2>{log}
+		"""
+
+rule filtlongX:
+	threads: 1
+	input:
+		"fastq-ont/{sample}.fastq"
+	output:
+		"fastq-ont/{sample}+filtlong{num}.fastq"
+	log: "fastq-ont/{sample}_filtlong{num}_log.txt"
+	shell:
+		"""
+		filtlong --min_length {filtlong_min_read_length} -t {wildcards.num}000000 {input} > {output} 2>{log}
+		"""
+
+#flye with default number of polishing rounds (=1 in flye v2.7.0)
 rule flye:
 	threads: 5
 	input:
@@ -50,7 +81,7 @@ rule flye:
 rule flyeX:
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq",
+		fq = "fastq-ont/{sample}.fastq"
 	output:
 		fa = "assemblies/{sample}_flye{num}/output.fa"
 	log: "assemblies/{sample}_flye{num}/log.txt"
