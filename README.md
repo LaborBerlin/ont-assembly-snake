@@ -21,7 +21,7 @@ conda activate ont-assembly-snake
 
 # Prepare data
 mkdir fastq-ont assemblies
-cp /path/to//my/data/my_sample/ont_reads.fastq fastq-ont/mysample.fastq
+cp /path/to/my/data/my_sample/ont_reads.fastq fastq-ont/mysample.fastq
 
 # Declare desired combination of read filtering, assembly and polishing
 mkdir assemblies/mysample_flye+racon2+medaka
