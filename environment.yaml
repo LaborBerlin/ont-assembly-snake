@@ -6,7 +6,7 @@ channels:
   - anaconda
 dependencies:
   - bioconda::snakemake=5.10.0
-  - bioconda::raven-assembler>=1.1.10
+  - bioconda::raven-assembler>=1.2.2
   - bioconda::medaka>=1.0.1
   - bioconda::flye>=2.7
   - bioconda::racon>=1.4.13

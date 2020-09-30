@@ -80,6 +80,23 @@ rule filtlongMql:
 		filtlong --min_length {filtlong_min_read_length} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
 		"""
 
+rule filtlongMqln:
+	threads: 1
+	wildcard_constraints:
+		mb = "[0-9]+",
+		readlen = "[0-9]+",
+		qweight = "[0-9]+",
+		lweight = "[0-9]+"
+	input:
+		"fastq-ont/{sample}.fastq"
+	output:
+		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight},{readlen}.fastq"
+	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight},{readlen}_log.txt"
+	shell:
+		"""
+		filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
+		"""
+
 #flye with default number of polishing rounds (=1 in flye v2.7.0)
 rule flye:
 	threads: 5
@@ -117,7 +134,7 @@ rule raven:
 	log: "assemblies/{sample}_raven/log.txt"
 	shell:
 		"""
-		raven -t {threads} {input.fq} >{output.fa} 2>{log}
+		raven --disable-checkpoints -t {threads} {input.fq} >{output.fa} 2>{log}
 		"""
 
 #for running raven with racon polishing X times
@@ -130,7 +147,7 @@ rule ravenX:
 	log: "assemblies/{sample}_raven{num}/log.txt"
 	shell:
 		"""
-		raven -p {wildcards.num} -t {threads} {input.fq} >{output.fa} 2>{log}
+		raven --disable-checkpoints -p {wildcards.num} -t {threads} {input.fq} >{output.fa} 2>{log}
 		"""
 
 #for running racon once
