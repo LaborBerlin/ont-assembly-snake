@@ -63,7 +63,7 @@ Read names and assembly+polishing need to be separated by an underscore.
 NB: This also means that sample names must not contain underscores.
 
 Both flye and raven do automatic polishing after assembly (by default 1 round
-in flye and 4 rounds in raven). These defaults can be changed by
+in flye and 2 rounds in raven). These defaults can be changed by
 appending a number after the assembler name (e.g. `flye2`), where a 0 would
 switch off the automatic polishing.
 
@@ -133,14 +133,13 @@ For the above example, these folders will be created:
 
 Run workflow in that folder, e.g. with 20 threads:
 ```
-snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20
+snakemake -k --use-conda -s /opt/software/ont-assembly-snake/Snakefile --cores 20
 ```
 
 The assemblies are contained in the files `output.fa` in each folder.
 
 Following additional configuration options can be passed to snakemake:
 
-* `genome_size` (default: "6m"), used by flye
 * `filtlong_min_read_length` (default: "1000"), used by Filtlong
 * `medaka_model`, for specifying a medaka model to be used for all samples
 * `map_medaka_model`, for specifying a tab-separated file with two columns mapping samples to medaka models
@@ -148,7 +147,7 @@ Following additional configuration options can be passed to snakemake:
 Options are specified using snakemake's `--config` parameter, for example:
 
 ```
-snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20 --config map_medaka_model=map_medaka.tsv genome_size=5m filtlong_min_read_length=5000
+snakemake -k --use-conda -s /opt/software/ont-assembly-snake/Snakefile --cores 20 --config map_medaka_model=map_medaka.tsv filtlong_min_read_length=5000
 ```
 where `map_medaka.tsv` contains, for example, the two columns:
 ```

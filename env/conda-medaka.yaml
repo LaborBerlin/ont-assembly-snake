@@ -1,0 +1,9 @@
+name: ont-assembly-snake-medaka
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::medaka=1.4.3
+

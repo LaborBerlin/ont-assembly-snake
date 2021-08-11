@@ -1,0 +1,11 @@
+name: ont-assembly-snake-pilon
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::bwa
+  - bioconda::samtools
+  - bioconda::pilon>=1.23
+

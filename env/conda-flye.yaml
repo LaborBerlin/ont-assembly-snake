@@ -1,0 +1,9 @@
+name: ont-assembly-snake-flye
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::flye=2.8.3
+

@@ -1,0 +1,9 @@
+name: ont-assembly-snake-raven
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::raven-assembler>=1.5.1
+

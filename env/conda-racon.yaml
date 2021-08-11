@@ -1,0 +1,10 @@
+name: ont-assembly-snake-racon
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::racon>=1.4.20
+  - bioconda::minimap2>=2.22
+
