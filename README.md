@@ -29,7 +29,7 @@ mkdir assemblies/mysample+filtlong500_flye+racon2+medaka
 mkdir assemblies/mysample_raven2+medaka
 
 # Run workflow
-snakemake -s ont-assembly-snake/Snakefile --cores 20 --config genome_size=5m
+snakemake -s ont-assembly-snake/Snakefile --cores 20
 ```
 
 
