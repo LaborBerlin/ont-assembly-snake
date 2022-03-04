@@ -102,7 +102,7 @@ rule filtlongMqln:
 		filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
 		"""
 
-#flye with default number of polishing rounds (=1 in flye v2.8.3)
+#flye with default number of polishing rounds (=1 in flye v2.9)
 rule flye:
   conda: "env/conda-flye.yaml"
 	threads: 5
