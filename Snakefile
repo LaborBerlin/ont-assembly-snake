@@ -19,7 +19,6 @@ if config.get('medaka_model',False):
   medaka_model = config['medaka_model']
   print("Medaka model = " + medaka_model)
 
-
 map_medaka_model = None
 if config.get('map_medaka_model',False):
   medaka_model_file = config['map_medaka_model']
@@ -32,18 +31,32 @@ wildcard_constraints:
   sample_assembly = "[^/]+",
 	num = "[0-9]+"
 
+references, = glob_wildcards("references/{ref,[^/\\\\]+}.fa")
+
 sample_assemblies, = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 #ignore symlinks in assemblies/folder, e.g. sample_flye.fa -> assemblies/sample_flye/output.fa
 sample_assemblies = [a for a in sample_assemblies if not re.search('\.fa', a)]
 print(sample_assemblies)
 
+# if any desired assembly requires homopolish then at least one reference genome should be provided
+if not references and [string for string in sample_assemblies if "homopolish" in string]:
+	quit("Error: must provide at least one reference genome sequence when using homopolish")
+
 list_outputs = expand("assemblies/{sample_assembly}/output.fa", sample_assembly = sample_assemblies)
 list_outputs_links = expand("assemblies/{sample_assembly}.fa", sample_assembly = sample_assemblies)
+# remove homopolish assemblies from default list
+list_outputs = [i for i in list_outputs if not re.search('homopolish', i, re.IGNORECASE)]
+list_outputs_links = [i for i in list_outputs_links if not re.search('homopolish', i, re.IGNORECASE)]
+# make lists for homopolish, one entry for each reference genome
+list_outputs_homopolish = expand("assemblies/{sample_assembly}/output_{ref}.fa", ref = references, sample_assembly = [i for i in sample_assemblies if re.search('homopolish$', i, re.IGNORECASE)])
+list_outputs_links_homopolish = expand("assemblies/{sample_assembly}{ref}.fa", ref = references, sample_assembly =  [i for i in sample_assemblies if re.search('homopolish$', i, re.IGNORECASE)])
 
 rule all:
 	input:
 		list_outputs,
-		list_outputs_links
+		list_outputs_links,
+		list_outputs_homopolish,
+		list_outputs_links_homopolish
 
 rule filtlong:
 	threads: 1
@@ -301,6 +314,25 @@ rule pilon:
 		samtools index {output.bam} 2>>{log}
 		pilon -Xmx60G --genome {input.prev_fa} --frags {output.bam} --outdir assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/ --output pilon --changes --vcf >>{log} 2>&1
 		mv assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/pilon.fasta {output.fa}
+		ln -sr {output.fa} {output.link}
+		"""
+
+rule homopolish:
+  conda: "env/conda-homopolish.yaml"
+	threads: 1
+	input:
+		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
+		ref = "references/{ref}.fa"
+	output:
+		fa = "assemblies/{sample}_{assembly}+homopolish/output_{ref}.fa",
+		link = "assemblies/{sample}_{assembly}+homopolish{ref}.fa"
+	log: "assemblies/{sample}_{assembly}+homopolish{ref}/log.txt"
+	shell:
+		"""
+		DIR_temp=$(mktemp -d --suffix=.raconX)
+		trap "rm -r $DIR_temp" EXIT
+		homopolish polish -a {input.prev_fa} -m R9.4.pkl -o $DIR_temp -l {input.ref} >{log} 2>&1
+		cp $DIR_temp/*_homopolished.fasta {output.fa}
 		ln -sr {output.fa} {output.link}
 		"""
 

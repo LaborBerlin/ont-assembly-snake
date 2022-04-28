@@ -1,0 +1,9 @@
+name: ont-assembly-snake-homopolish
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::homopolish>=0.3.3
+

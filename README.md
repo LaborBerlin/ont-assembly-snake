@@ -10,6 +10,7 @@ Currently included programs:
 * [medaka](https://github.com/nanoporetech/medaka)
 * [pilon](https://github.com/broadinstitute/pilon/wiki)
 * [Filtlong](https://github.com/rrwick/Filtlong)
+* [homopolish](https://github.com/ythuang0522/homopolish)
 
 ## Quick start
 ```bash
