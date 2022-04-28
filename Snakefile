@@ -135,6 +135,39 @@ rule flyeX:
 		ln -sr {output.fa} {output.link}
 		"""
 
+#flye for HQ ONT reads (from flye 2.9), with default number of polishing rounds (=1 in flye v2.9)
+rule flyeHQ:
+  conda: "env/conda-flye.yaml"
+	threads: 5
+	input:
+		fq = "fastq-ont/{sample}.fastq"
+	output:
+		fa = "assemblies/{sample}_flyeHQ/output.fa",
+		link = "assemblies/{sample}_flyeHQ.fa"
+	log: "assemblies/{sample}_flyeHQ/log.txt"
+	shell:
+		"""
+		flye --nano-hq {input.fq} -o assemblies/{wildcards.sample}_flyeHQ/ -t {threads} 2>{log}
+		mv assemblies/{wildcards.sample}_flye/assembly.fasta {output.fa}
+		ln -sr {output.fa} {output.link}
+		"""
+
+rule flyeHQX:
+  conda: "env/conda-flye.yaml"
+	threads: 5
+	input:
+		fq = "fastq-ont/{sample}.fastq"
+	output:
+		fa = "assemblies/{sample}_flyeHQ{num}/output.fa",
+		link = "assemblies/{sample}_flyeHQ{num}.fa"
+	log: "assemblies/{sample}_flyeHQ{num}/log.txt"
+	shell:
+		"""
+		flye --nano-hq {input.fq} -o assemblies/{wildcards.sample}_flyeHQ{wildcards.num}/ -t {threads} -i {wildcards.num} 2>{log}
+		mv assemblies/{wildcards.sample}_flyeHQ{wildcards.num}/assembly.fasta {output.fa}
+		ln -sr {output.fa} {output.link}
+		"""
+
 #for running raven with default number of racon-polishing rounds (=2 in raven v0.0.8)
 rule raven:
   conda: "env/conda-raven.yaml"
