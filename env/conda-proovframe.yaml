@@ -1,0 +1,9 @@
+name: ont-assembly-snake-proovframe
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::proovframe>=0.9.7
+

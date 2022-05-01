@@ -11,6 +11,7 @@ Currently included programs:
 * [pilon](https://github.com/broadinstitute/pilon/wiki)
 * [Filtlong](https://github.com/rrwick/Filtlong)
 * [homopolish](https://github.com/ythuang0522/homopolish)
+* [proovframe](https://github.com/thackl/proovframe)
 
 ## Quick start
 ```bash
@@ -75,6 +76,8 @@ on the flye assembly.
 The ONT reads can be filtered by Filtlong prior to the assembly, for example
 by reducing the input read set to contain only the highest quality reads up to a certain number of megabases.
 This is specified by adding, i.e. for 500Mb, `+filtlong500` to the sample name.
+
+The polishing steps with homopolish and proovframe always need to be the last one.
 
 ### Example folder structure
 This example contains two samples with ONT sequencing reads and Illumina reads

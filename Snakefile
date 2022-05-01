@@ -33,6 +33,8 @@ wildcard_constraints:
 
 references, = glob_wildcards("references/{ref,[^/\\\\]+}.fa")
 
+references_protein, = glob_wildcards("references-protein/{ref,[^/\\\\]+}.faa")
+
 sample_assemblies, = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 #ignore symlinks in assemblies/folder, e.g. sample_flye.fa -> assemblies/sample_flye/output.fa
 sample_assemblies = [a for a in sample_assemblies if not re.search('\.fa', a)]
@@ -42,21 +44,32 @@ print(sample_assemblies)
 if not references and [string for string in sample_assemblies if "homopolish" in string]:
 	quit("Error: must provide at least one reference genome sequence when using homopolish")
 
+# if any desired assembly requires proovframe then at least one reference proteome should be provided
+if not references_protein and [string for string in sample_assemblies if "proovframe" in string]:
+	quit("Error: must provide at least one reference protein file when using proovframe")
+
 list_outputs = expand("assemblies/{sample_assembly}/output.fa", sample_assembly = sample_assemblies)
 list_outputs_links = expand("assemblies/{sample_assembly}.fa", sample_assembly = sample_assemblies)
-# remove homopolish assemblies from default list
-list_outputs = [i for i in list_outputs if not re.search('homopolish', i, re.IGNORECASE)]
-list_outputs_links = [i for i in list_outputs_links if not re.search('homopolish', i, re.IGNORECASE)]
+# remove homopolish and proovframe assemblies from default list
+list_outputs = [i for i in list_outputs if not re.search('homopolish|proovframe', i, re.IGNORECASE)]
+list_outputs_links = [i for i in list_outputs_links if not re.search('homopolish|proovframe', i, re.IGNORECASE)]
+
 # make lists for homopolish, one entry for each reference genome
 list_outputs_homopolish = expand("assemblies/{sample_assembly}/output_{ref}.fa", ref = references, sample_assembly = [i for i in sample_assemblies if re.search('homopolish$', i, re.IGNORECASE)])
 list_outputs_links_homopolish = expand("assemblies/{sample_assembly}{ref}.fa", ref = references, sample_assembly =  [i for i in sample_assemblies if re.search('homopolish$', i, re.IGNORECASE)])
+
+# make lists for proovframe, one entry for each reference protein file
+list_outputs_proovframe = expand("assemblies/{sample_assembly}/output_{ref}.fa", ref = references_protein, sample_assembly = [i for i in sample_assemblies if re.search('proovframe$', i, re.IGNORECASE)])
+list_outputs_links_proovframe = expand("assemblies/{sample_assembly}{ref}.fa", ref = references_protein, sample_assembly =  [i for i in sample_assemblies if re.search('proovframe$', i, re.IGNORECASE)])
 
 rule all:
 	input:
 		list_outputs,
 		list_outputs_links,
 		list_outputs_homopolish,
-		list_outputs_links_homopolish
+		list_outputs_links_homopolish,
+		list_outputs_proovframe,
+		list_outputs_links_proovframe
 
 rule filtlong:
 	threads: 1
@@ -326,13 +339,42 @@ rule homopolish:
 	output:
 		fa = "assemblies/{sample}_{assembly}+homopolish/output_{ref}.fa",
 		link = "assemblies/{sample}_{assembly}+homopolish{ref}.fa"
-	log: "assemblies/{sample}_{assembly}+homopolish{ref}/log.txt"
+	log: "assemblies/{sample}_{assembly}+homopolish/{ref}_log.txt"
 	shell:
 		"""
 		DIR_temp=$(mktemp -d --suffix=.raconX)
 		trap "rm -r $DIR_temp" EXIT
 		homopolish polish -a {input.prev_fa} -m R9.4.pkl -o $DIR_temp -l {input.ref} >{log} 2>&1
 		cp $DIR_temp/*_homopolished.fasta {output.fa}
+		ln -sr {output.fa} {output.link}
+		"""
+
+rule proovframe_diamond_index:
+  conda: "env/conda-proovframe.yaml"
+	threads: 5
+	input: "references-protein/{ref}.faa"
+	output: "references-protein/{ref}.dmnd"
+	log: "references_proteins/{ref}-diamond-index.txt"
+	shell:
+		"""
+		diamond makedb -p {threads} --in {input} --db {output} >{log} 2>&1
+		"""
+
+rule proovframe:
+  conda: "env/conda-proovframe.yaml"
+	threads: 1
+	input:
+		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
+		ref = "references-protein/{ref}.dmnd"
+	output:
+		fa = "assemblies/{sample}_{assembly}+proovframe/output_{ref}.fa",
+		tsv = "assemblies/{sample}_{assembly}+proovframe/output_{ref}.tsv",
+		link = "assemblies/{sample}_{assembly}+proovframe{ref}.fa"
+	log: "assemblies/{sample}_{assembly}+proovframe/{ref}_log.txt"
+	shell:
+		"""
+		proovframe map -d {input.ref} -o {output.tsv} {input.prev_fa} >{log} 2>&1
+		proovframe fix -o {output.fa} {input.prev_fa} {output.tsv} >{log} 2>&1
 		ln -sr {output.fa} {output.link}
 		"""
 
