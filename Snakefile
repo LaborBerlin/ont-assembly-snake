@@ -354,7 +354,7 @@ rule proovframe_diamond_index:
 	threads: 5
 	input: "references-protein/{ref}.faa"
 	output: "references-protein/{ref}.dmnd"
-	log: "references_proteins/{ref}-diamond-index.txt"
+	log: "references-protein/{ref}-diamond-index.txt"
 	shell:
 		"""
 		diamond makedb -p {threads} --in {input} --db {output} >{log} 2>&1
