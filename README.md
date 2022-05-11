@@ -5,6 +5,7 @@ Combinations of assemblers with polishing tools can be applied to multiple sampl
 
 Currently included programs:
 * [flye](https://github.com/fenderglass/Flye)
+* [Unicycler](https://github.com/rrwick/Unicycler)
 * [raven](https://github.com/lbcb-sci/raven)
 * [racon](https://github.com/lbcb-sci/racon)
 * [medaka](https://github.com/nanoporetech/medaka)

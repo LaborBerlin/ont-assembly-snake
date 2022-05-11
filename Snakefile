@@ -38,7 +38,6 @@ references_protein, = glob_wildcards("references-protein/{ref,[^/\\\\]+}.faa")
 sample_assemblies, = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 #ignore symlinks in assemblies/folder, e.g. sample_flye.fa -> assemblies/sample_flye/output.fa
 sample_assemblies = [a for a in sample_assemblies if not re.search('\.fa', a)]
-print(sample_assemblies)
 
 # if any desired assembly requires homopolish then at least one reference genome should be provided
 if not references and [string for string in sample_assemblies if "homopolish" in string]:
@@ -127,6 +126,25 @@ rule filtlongMqln:
 		"""
 		filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
 		"""
+
+rule unicycler:
+  conda: "env/conda-unicycler.yaml"
+	threads: 10
+	input:
+		fqont = "fastq-ont/{sample}.fastq",
+		fq1 = "fastq-illumina/{sample}_R1.fastq",
+		fq2 = "fastq-illumina/{sample}_R2.fastq"
+	output:
+		fa = "assemblies/{sample}_unicycler/output.fa",
+		link = "assemblies/{sample}_unicycler.fa"
+	log: "assemblies/{sample}_unicycler/log.txt"
+	shell:
+		"""
+		unicycler -1 {input.fq1} -2 {input.fq2} -l {input.fqont} -t {threads} --keep 0 -o assemblies/{wildcards.sample}_unicycler/ >{log} 2>&1
+		cp assemblies/{wildcards.sample}_unicycler/assembly.fasta {output.fa} 2>>{log}
+		ln -sr {output.fa} {output.link}
+		"""
+
 
 #flye with default number of polishing rounds (=1 in flye v2.9)
 rule flye:
