@@ -330,6 +330,27 @@ rule pilon:
 		ln -sr {output.fa} {output.link}
 		"""
 
+rule polypolish:
+  conda: "env/conda-polypolish.yaml"
+	threads: 5
+	input:
+		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
+		fq1 = "fastq-illumina/{sample}_R1.fastq",
+		fq2 = "fastq-illumina/{sample}_R2.fastq"
+	output:
+		fa = "assemblies/{sample}_{assembly}+polypolish/output.fa",
+		link = "assemblies/{sample}_{assembly}+polypolish.fa"
+	log: "assemblies/{sample}_{assembly}+polypolish/log.txt"
+	shell:
+		"""
+		bwa index -p assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.prev_fa} >{log} 2>&1
+		bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq1} > assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R1.sam 2>>{log}
+		bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq2} > assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R2.sam 2>>{log}
+		polypolish_insert_filter.py --in1 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R1.sam --in2 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R2.sam --out1 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R1.sam --out2 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R2.sam >>{log} 2>&1
+		polypolish {input.prev_fa} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R1.sam assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R2.sam > {output.fa} 2>>{log}
+		ln -sr {output.fa} {output.link}
+		"""
+
 rule homopolish:
   conda: "env/conda-homopolish.yaml"
 	threads: 1

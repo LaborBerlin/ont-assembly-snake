@@ -1,7 +1,7 @@
 # ont-assembly-snake
 
 A snakemake-wrapper for creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data.
-Combinations of assemblers and polishing tools can be applied to multiple samples at once.
+Combinations of assemblers with polishing tools can be applied to multiple samples at once.
 
 Currently included programs:
 * [flye](https://github.com/fenderglass/Flye)
@@ -9,6 +9,7 @@ Currently included programs:
 * [racon](https://github.com/lbcb-sci/racon)
 * [medaka](https://github.com/nanoporetech/medaka)
 * [pilon](https://github.com/broadinstitute/pilon/wiki)
+* [Polypolish](https://github.com/rrwick/Polypolish)
 * [Filtlong](https://github.com/rrwick/Filtlong)
 * [homopolish](https://github.com/ythuang0522/homopolish)
 * [proovframe](https://github.com/thackl/proovframe)

@@ -1,0 +1,10 @@
+name: ont-assembly-snake-polypolish
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::polypolish=0.5.0
+  - bioconda::bwa=0.7.17
+
