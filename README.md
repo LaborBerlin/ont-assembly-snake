@@ -237,7 +237,7 @@ snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20 -
 
 Snakemake will recursively handle the dependencies for each assembly,
 and create folders for all intermediate steps automatically.
-Additionally, a symlink will created for each output assembly in the `assemblies/` folder.
+Additionally, a symlink is created for each output assembly in the `assemblies/` folder, so they can easily be used as input for [score-assemblies](https://github.com/pmenzel/score-assemblies).
 
 For the above example, the folders will look like this after running the workflow:
 ```
@@ -279,7 +279,7 @@ For the above example, the folders will look like this after running the workflo
 └── references-protein
     └── Ecoli.faa
 ```
-(Not shown is the content of each subfolder in `assemblies/`.)
+(Not shown is the content of each subfolder in `assemblies/` and some auxiliary files.)
 
 
 
