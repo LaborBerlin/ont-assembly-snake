@@ -6,7 +6,7 @@ shell.executable("/bin/bash")
 filtlong_min_read_length = "1000"
 if config.get('filtlong_min_read_length',False):
   filtlong_min_read_length = config['filtlong_min_read_length']
-print("filtlong min. read length = " + filtlong_min_read_length)
+print("filtlong min. read length = " + str(filtlong_min_read_length))
 
 #not needed anymore in flye 2.8
 #genome_size = "6m"
@@ -318,7 +318,6 @@ rule medaka:
 	params:
 		model = get_model_for_sample
 	log: "assemblies/{sample}_{assembly}+medaka/log.txt"
-	message: "Medaka: {wildcards.sample}, {wildcards.assembly}, {params.model}"
 	shell:
 		"""
 		medaka_consensus -f -i {input.fq} -d {input.prev_fa} -o assemblies/{wildcards.sample}_{wildcards.assembly}+medaka -t {threads} {params.model} >{log} 2>&1

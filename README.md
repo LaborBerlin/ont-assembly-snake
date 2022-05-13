@@ -35,7 +35,7 @@ mkdir assemblies/mysample_raven2+medaka+pilon
 [...]
 
 # Run workflow
-snakemake -s ont-assembly-snake/Snakefile --cores 20
+snakemake -s ont-assembly-snake/Snakefile --use-conda --cores 20
 ```
 
 ## Installation
@@ -73,7 +73,7 @@ After the keyword for the assembler follow the keywords for one ore more polishi
 
 After making the desired subfolders in `assemblies/`, run the workflow, e.g. with 20 threads:
 ```
-snakemake -k --use-conda -s /opt/software/ont-assembly-snake/Snakefile --cores 20
+snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20
 ```
 
 Assemblies created in each step are contained in the files `output.fa` in each folder and symlinked as `.fa` files in the `assemblies/` folder.
@@ -212,34 +212,74 @@ followed by medaka and pilon polishing using the Illumina reads, and finally ref
 We therefore create the folders and files as follows:
 ```
 .
-├── fastq-ont
-│   ├── sample1.fastq
-│   └── sample2.fastq
-│
+├── assemblies
+│   ├── sample1+filtlong500_flye+racon2+medaka+homopolish
+│   ├── sample1_flye+racon2+medaka+homopolish
+│   ├── sample2_raven2+medaka+pilon+proovframe
 ├── fastq-illumina
 │   ├── sample2_R1.fastq
 │   └── sample2_R2.fastq
-│
+├── fastq-ont
+│   ├── sample1.fastq
+│   └── sample2.fastq
 ├── references
 │   └── Ecoli.fa
-│
-├── references-protein
-│   └── Ecoli.faa
-│
-└── assemblies
-    ├── sample1_flye+racon2+medaka+homopolish
-    ├── sample1+filtlong500_flye+racon2+medaka+homopolish
-    └── sample2_raven2+medaka+pilon+proovframe
+└── references-protein
+    └── Ecoli.faa
 ```
 
-We also want to set the minimum read length threshold for Filtlong to 2000nt and use the medaka model `r941_min_high_g351` for both samples.
+We also want to set the minimum read length threshold for Filtlong to 500nt and use the medaka model `r941_min_high_g351` for both samples.
 
 Therefore, we run the workflow with:
 ```
-snakemake -k -s /opt/software/ont-assembly-snake/Snakefile --cores 20 --config medaka_model=r941_min_high_g351 filtlong_min_read_length=2000
+snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20 --config medaka_model=r941_min_high_g351 filtlong_min_read_length=500
 ```
 
 Snakemake will recursively handle the dependencies for each assembly,
 and create folders for all intermediate steps automatically.
+Additionally, a symlink will created for each output assembly in the `assemblies/` folder.
+
+For the above example, the folders will look like this after running the workflow:
+```
+.
+├── assemblies
+│   ├── sample1+filtlong500_flye
+│   ├── sample1+filtlong500_flye.fa -> sample1+filtlong500_flye/output.fa
+│   ├── sample1+filtlong500_flye+racon2
+│   ├── sample1+filtlong500_flye+racon2.fa -> sample1+filtlong500_flye+racon2/output.fa
+│   ├── sample1+filtlong500_flye+racon2+medaka
+│   ├── sample1+filtlong500_flye+racon2+medaka.fa -> sample1+filtlong500_flye+racon2+medaka/output.fa
+│   ├── sample1+filtlong500_flye+racon2+medaka+homopolish
+│   ├── sample1+filtlong500_flye+racon2+medaka+homopolishEcoli.fa -> sample1+filtlong500_flye+racon2+medaka+homopolish/output_Ecoli.fa
+│   ├── sample1_flye
+│   ├── sample1_flye.fa -> sample1_flye/output.fa
+│   ├── sample1_flye+racon2
+│   ├── sample1_flye+racon2.fa -> sample1_flye+racon2/output.fa
+│   ├── sample1_flye+racon2+medaka
+│   ├── sample1_flye+racon2+medaka.fa -> sample1_flye+racon2+medaka/output.fa
+│   ├── sample1_flye+racon2+medaka+homopolish
+│   ├── sample1_flye+racon2+medaka+homopolishEcoli.fa -> sample1_flye+racon2+medaka+homopolish/output_Ecoli.fa
+│   ├── sample2_raven2
+│   ├── sample2_raven2.fa -> sample2_raven2/output.fa
+│   ├── sample2_raven2+medaka
+│   ├── sample2_raven2+medaka.fa -> sample2_raven2+medaka/output.fa
+│   ├── sample2_raven2+medaka+pilon
+│   ├── sample2_raven2+medaka+pilon.fa -> sample2_raven2+medaka+pilon/output.fa
+│   ├── sample2_raven2+medaka+pilon+proovframe
+│   └── sample2_raven2+medaka+pilon+proovframeEcoli.fa -> sample2_raven2+medaka+pilon+proovframe/output_Ecoli.fa
+├── fastq-illumina
+│   ├── sample2_R1.fastq
+│   └── sample2_R2.fastq
+├── fastq-ont
+│   ├── sample1.fastq
+│   ├── sample1+filtlong500.fastq
+│   └── sample2.fastq
+├── references
+│   └── Ecoli.fa
+└── references-protein
+    └── Ecoli.faa
+```
+(Not shown is the content of each subfolder in `assemblies/`.)
+
 
 
