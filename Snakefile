@@ -192,7 +192,7 @@ rule flyehq:
 	shell:
 		"""
 		flye --nano-hq {input.fq} -o assemblies/{wildcards.sample}_flyehq/ -t {threads} 2>{log}
-		mv assemblies/{wildcards.sample}_flye/assembly.fasta {output.fa}
+		mv assemblies/{wildcards.sample}_flyehq/assembly.fasta {output.fa}
 		ln -sr {output.fa} {output.link}
 		"""
 
