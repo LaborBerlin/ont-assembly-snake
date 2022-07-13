@@ -140,7 +140,9 @@ rule unicycler:
 	log: "assemblies/{sample}_unicycler/log.txt"
 	shell:
 		"""
-		unicycler -1 {input.fq1} -2 {input.fq2} -l {input.fqont} -t {threads} --keep 0 -o assemblies/{wildcards.sample}_unicycler/ >{log} 2>&1
+		# del spades folder if already exists (e.g. when workflow was canceled), so that it does not warn about it upon restart
+		[ -d "assemblies/{wildcards.sample}_unicycler/spades_assembly" ] && rm -r "assemblies/{wildcards.sample}_unicycler/spades_assembly" >{log}
+		unicycler -1 {input.fq1} -2 {input.fq2} -l {input.fqont} -t {threads} --keep 0 -o assemblies/{wildcards.sample}_unicycler/ >>{log} 2>&1
 		cp assemblies/{wildcards.sample}_unicycler/assembly.fasta {output.fa} 2>>{log}
 		ln -sr {output.fa} {output.link}
 		"""
