@@ -31,6 +31,18 @@ wildcard_constraints:
   sample_assembly = "[^/]+",
 	num = "[0-9]+"
 
+def get_ont_fq(wildcards):
+	if "filtlong" in wildcards.sample:
+		return 'fastq-ont/' + wildcards.sample + '.fastq'
+	else:
+		return sorted(glob('fastq-ont/' + wildcards.sample + '.fastq*'))
+
+# use split("+")[0] here for removing the +filtlong... suffices from sample names for Illumina reads
+def get_R1_fq(wildcards):
+	return sorted(glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R1.fastq*'))
+def get_R2_fq(wildcards):
+	return sorted(glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R2.fastq*'))
+
 references, = glob_wildcards("references/{ref,[^/\\\\]+}.fa")
 
 references_protein, = glob_wildcards("references-protein/{ref,[^/\\\\]+}.faa")
@@ -73,7 +85,7 @@ rule all:
 rule filtlong:
 	threads: 1
 	input:
-		"fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		"fastq-ont/{sample}+filtlong.fastq"
 	log: "fastq-ont/{sample}_filtlong_log.txt"
@@ -85,7 +97,7 @@ rule filtlong:
 rule filtlongX:
 	threads: 1
 	input:
-		"fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		"fastq-ont/{sample}+filtlong{num}.fastq"
 	log: "fastq-ont/{sample}_filtlong{num}_log.txt"
@@ -101,7 +113,7 @@ rule filtlongMql:
 		qweight = "[0-9]+",
 		lweight = "[0-9]+"
 	input:
-		"fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight}.fastq"
 	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight}_log.txt"
@@ -118,7 +130,7 @@ rule filtlongMqln:
 		qweight = "[0-9]+",
 		lweight = "[0-9]+"
 	input:
-		"fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight},{readlen}.fastq"
 	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight},{readlen}_log.txt"
@@ -131,9 +143,9 @@ rule unicycler:
   conda: "env/conda-unicycler.yaml"
 	threads: 10
 	input:
-		fqont = "fastq-ont/{sample}.fastq",
-		fq1 = "fastq-illumina/{sample}_R1.fastq",
-		fq2 = "fastq-illumina/{sample}_R2.fastq"
+		fqont = get_ont_fq,
+		fq1 = get_R1_fq,
+		fq2 = get_R2_fq
 	output:
 		fa = "assemblies/{sample}_unicycler/output.fa",
 		link = "assemblies/{sample}_unicycler.fa"
@@ -153,7 +165,7 @@ rule flye:
   conda: "env/conda-flye.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_flye/output.fa",
 		link = "assemblies/{sample}_flye.fa"
@@ -169,7 +181,7 @@ rule flyeX:
   conda: "env/conda-flye.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_flye{num}/output.fa",
 		link = "assemblies/{sample}_flye{num}.fa"
@@ -186,7 +198,7 @@ rule flyehq:
   conda: "env/conda-flye.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_flyehq/output.fa",
 		link = "assemblies/{sample}_flyehq.fa"
@@ -202,7 +214,7 @@ rule flyehqX:
   conda: "env/conda-flye.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_flyehq{num}/output.fa",
 		link = "assemblies/{sample}_flyehq{num}.fa"
@@ -219,7 +231,7 @@ rule raven:
   conda: "env/conda-raven.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_raven/output.fa",
 		link = "assemblies/{sample}_raven.fa"
@@ -235,7 +247,7 @@ rule ravenX:
   conda: "env/conda-raven.yaml"
 	threads: 5
 	input:
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_raven{num}/output.fa",
 		link = "assemblies/{sample}_raven{num}.fa"
@@ -252,7 +264,7 @@ rule racon:
 	threads: 5
 	input:
 		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_{assembly}+racon/output.fa",
 		link = "assemblies/{sample}_{assembly}+racon.fa",
@@ -271,7 +283,7 @@ rule raconX:
 	threads: 5
 	input:
 		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_{assembly}+racon{num}/output.fa",
 		link = "assemblies/{sample}_{assembly}+racon{num}.fa"
@@ -313,7 +325,7 @@ rule medaka:
 	threads: 5
 	input:
 		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
-		fq = "fastq-ont/{sample}.fastq"
+		fq = get_ont_fq
 	output:
 		fa = "assemblies/{sample}_{assembly}+medaka/output.fa",
 		link = "assemblies/{sample}_{assembly}+medaka.fa"
@@ -332,8 +344,8 @@ rule pilon:
 	threads: 5
 	input:
 		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
-		fq1 = "fastq-illumina/{sample}_R1.fastq",
-		fq2 = "fastq-illumina/{sample}_R2.fastq"
+		fq1 = get_R1_fq,
+		fq2 = get_R2_fq
 	output:
 		bam = "assemblies/{sample}_{assembly}+pilon/map.bam",
 		fa = "assemblies/{sample}_{assembly}+pilon/output.fa",
@@ -354,8 +366,8 @@ rule polypolish:
 	threads: 5
 	input:
 		prev_fa = "assemblies/{sample}_{assembly}/output.fa",
-		fq1 = "fastq-illumina/{sample}_R1.fastq",
-		fq2 = "fastq-illumina/{sample}_R2.fastq"
+		fq1 = get_R1_fq,
+		fq2 = get_R2_fq
 	output:
 		fa = "assemblies/{sample}_{assembly}+polypolish/output.fa",
 		link = "assemblies/{sample}_{assembly}+polypolish.fa"
@@ -414,7 +426,7 @@ rule proovframe:
 	shell:
 		"""
 		proovframe map -d {input.ref} -o {output.tsv} {input.prev_fa} >{log} 2>&1
-		proovframe fix -o {output.fa} {input.prev_fa} {output.tsv} >{log} 2>&1
+		proovframe fix -o {output.fa} {input.prev_fa} {output.tsv} >>{log} 2>&1
 		ln -sr {output.fa} {output.link}
 		"""
 
