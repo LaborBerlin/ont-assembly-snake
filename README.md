@@ -43,12 +43,12 @@ Clone repository, for example into the existing folder `/opt/software/`:
 ```
 git clone https://github.com/pmenzel/ont-assembly-snake.git /opt/software/ont-assembly-snake
 ```
-Install [conda](https://docs.conda.io/en/latest/miniconda.html) and then create a new environment called `ont-assembly-snake`:
+Install [conda](https://docs.conda.io/en/latest/miniconda.html) and create a new environment called `ont-assembly-snake`:
 ```
 conda config --add channels bioconda
 conda env create -n ont-assembly-snake --file /opt/software/ont-assembly-snake/env/conda-main.yaml
 ```
-and activate the environment:
+Activate the environment:
 ```
 conda activate ont-assembly-snake
 ```
@@ -76,7 +76,7 @@ After making the desired subfolders in `assemblies/`, run the workflow, e.g. wit
 snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20
 ```
 
-Assemblies created in each step are contained in the files `output.fa` in each folder and symlinked as `.fa` files in the `assemblies/` folder.
+Assemblies created in each step are contained in the files `output.fa` in each folder and symlinked as `.fa` files in the `assemblies/` folder, see the example below.
 
 ## Included Programs
 
@@ -103,7 +103,7 @@ Further, reads are filtered by their length as above. The output is written to `
 
 **`filtlongM,Q,L,N`**  
 As above, but the the minimum read length is explicitly specified by `N` and not by the global option `filtlong_min_read_length`:
-The output is written to `fastq-ont/mysample*filtlongM,Q,L,N.fastq`.
+The output is written to `fastq-ont/mysample+filtlongM,Q,L,N.fastq`.
 
 When using any of the Filtlong keywords, they must be followed by an underscore, followed by the keyword for the assembler.
 
