@@ -35,13 +35,13 @@ def get_ont_fq(wildcards):
 	if "filtlong" in wildcards.sample:
 		return 'fastq-ont/' + wildcards.sample + '.fastq'
 	else:
-		return sorted(glob('fastq-ont/' + wildcards.sample + '.fastq*'))
+		return glob('fastq-ont/' + wildcards.sample + '.fastq*')
 
 # use split("+")[0] here for removing the +filtlong... suffices from sample names for Illumina reads
 def get_R1_fq(wildcards):
-	return sorted(glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R1.fastq*'))
+	return glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R1.fastq*')
 def get_R2_fq(wildcards):
-	return sorted(glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R2.fastq*'))
+	return glob('fastq-illumina/' + wildcards.sample.split("+")[0] + '_R2.fastq*')
 
 references, = glob_wildcards("references/{ref,[^/\\\\]+}.fa")
 
