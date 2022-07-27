@@ -30,7 +30,7 @@ cp /path/to/my/data/my_sample/illumina_reads_R2.fastq.gz fastq-illumina/mysample
 # Declare desired combination of read filtering, assembly and polishing
 mkdir assemblies
 mkdir assemblies/mysample_flye+medaka
-mkdir assemblies/mysample+filtlong500_flye+racon2+medaka
+mkdir assemblies/mysample+filtlongMB500_flye+racon2+medaka
 mkdir assemblies/mysample_raven2+medaka+pilon
 [...]
 
@@ -91,21 +91,26 @@ reads longer than 1000 bases; using the Filtlong option `--min_length`. The filt
 `fastq-ont/mysample+filtlong.fastq`. The length can be changed using the
 snakemake configuration option `filtlong_min_read_length`.
 
-**`filtlongM`**  
-This will filter the reads to only include reads with highest average quality up to a total length of `M` megabases.
-Further, reads are filtered by their length as above. The output is written to `fastq-ont/mysample+filtlongM.fastq`.
+**`filtlongPC<p>`**  
+This will filter the reads to only include the top `p` percent of megabases from reads with highest average quality using
+the Filtlong option `--keep_percent`.
+Further, reads are filtered by their length as above. The output is written to `fastq-ont/mysample+filtlongPC<p>.fastq`.
 
-**`filtlongM,Q,L`**  
-This will filter the reads to only include reads up to a total length of `M` megabases, which are filtered by length
-and quality, where `Q` and `L` set the priority for each using the Filtlong options `--mean_q_weight` and `--length_weight`, respectively.
+**`filtlongMB<m>`**  
+This will filter the reads to only include reads with highest average quality up to a total length of `m` megabases.
+Further, reads are filtered by their length. The output is written to `fastq-ont/mysample+filtlongMB<m>.fastq`.
+
+**`filtlongMB<m>,<q>,<l>`**  
+This will filter the reads to only include reads up to a total length of `m` megabases, which are filtered by length
+and quality, where `q` and `l` set the priority for each using the Filtlong options `--mean_q_weight` and `--length_weight`, respectively.
 See also the [section in the Filtlong docs](https://github.com/rrwick/Filtlong#length-priority).
-Further, reads are filtered by their length as above. The output is written to `fastq-ont/mysample+filtlongM,Q,L.fastq`.
+Further, reads are filtered by their length as above. The output is written to `fastq-ont/mysample+filtlongMB<m>,<q>,<l>.fastq`.
 
-**`filtlongM,Q,L,N`**  
-As above, but the the minimum read length is explicitly specified by `N` and not by the global option `filtlong_min_read_length`:
-The output is written to `fastq-ont/mysample+filtlongM,Q,L,N.fastq`.
+**`filtlongMB<m>,<q>,<l>,<n>`**  
+As above, but the the minimum read length is explicitly specified by `n` and not by the global option `filtlong_min_read_length`:
+The output is written to `fastq-ont/mysample+filtlongMB<m>,<q>,<l>,<n>.fastq`.
 
-When using any of the Filtlong keywords, they must be followed by an underscore, followed by the keyword for the assembler.
+When using any of the Filtlong keywords in a folder name, they must be followed by an underscore, followed by the keyword for the assembler.
 
 ### Flye
 
@@ -212,7 +217,7 @@ We therefore create the folders and files as follows:
 ```
 .
 ├── assemblies
-│   ├── sample1+filtlong500_flye+racon2+medaka+homopolish
+│   ├── sample1+filtlongMB500_flye+racon2+medaka+homopolish
 │   ├── sample1_flye+racon2+medaka+homopolish
 │   ├── sample2_raven2+medaka+pilon+proovframe
 ├── fastq-illumina
@@ -242,14 +247,14 @@ For the above example, the folders will look like this after running the workflo
 ```
 .
 ├── assemblies
-│   ├── sample1+filtlong500_flye
-│   ├── sample1+filtlong500_flye.fa -> sample1+filtlong500_flye/output.fa
-│   ├── sample1+filtlong500_flye+racon2
-│   ├── sample1+filtlong500_flye+racon2.fa -> sample1+filtlong500_flye+racon2/output.fa
-│   ├── sample1+filtlong500_flye+racon2+medaka
-│   ├── sample1+filtlong500_flye+racon2+medaka.fa -> sample1+filtlong500_flye+racon2+medaka/output.fa
-│   ├── sample1+filtlong500_flye+racon2+medaka+homopolish
-│   ├── sample1+filtlong500_flye+racon2+medaka+homopolishEcoli.fa -> sample1+filtlong500_flye+racon2+medaka+homopolish/output_Ecoli.fa
+│   ├── sample1+filtlongMB500_flye
+│   ├── sample1+filtlongMB500_flye.fa -> sample1+filtlongMB500_flye/output.fa
+│   ├── sample1+filtlongMB500_flye+racon2
+│   ├── sample1+filtlongMB500_flye+racon2.fa -> sample1+filtlongMB500_flye+racon2/output.fa
+│   ├── sample1+filtlongMB500_flye+racon2+medaka
+│   ├── sample1+filtlongMB500_flye+racon2+medaka.fa -> sample1+filtlongMB500_flye+racon2+medaka/output.fa
+│   ├── sample1+filtlongMB500_flye+racon2+medaka+homopolish
+│   ├── sample1+filtlongMB500_flye+racon2+medaka+homopolishEcoli.fa -> sample1+filtlongMB500_flye+racon2+medaka+homopolish/output_Ecoli.fa
 │   ├── sample1_flye
 │   ├── sample1_flye.fa -> sample1_flye/output.fa
 │   ├── sample1_flye+racon2
@@ -271,7 +276,7 @@ For the above example, the folders will look like this after running the workflo
 │   └── sample2_R2.fastq
 ├── fastq-ont
 │   ├── sample1.fastq
-│   ├── sample1+filtlong500.fastq
+│   ├── sample1+filtlongMB500.fastq
 │   └── sample2.fastq
 ├── references
 │   └── Ecoli.fa

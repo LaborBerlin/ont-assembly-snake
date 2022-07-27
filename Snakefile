@@ -94,19 +94,32 @@ rule filtlong:
 		filtlong --min_length {filtlong_min_read_length} {input} > {output} 2>{log}
 		"""
 
-rule filtlongX:
+rule filtlongMB:
 	threads: 1
 	input:
 		fq = get_ont_fq
 	output:
-		"fastq-ont/{sample}+filtlong{num}.fastq"
-	log: "fastq-ont/{sample}_filtlong{num}_log.txt"
+		"fastq-ont/{sample}+filtlongMB{num}.fastq"
+	log: "fastq-ont/{sample}_filtlongMB{num}_log.txt"
 	shell:
 		"""
 		filtlong --min_length {filtlong_min_read_length} -t {wildcards.num}000000 {input} > {output} 2>{log}
 		"""
 
-rule filtlongMql:
+# for keeping num PerCent of the bases
+rule filtlongPC:
+	threads: 1
+	input:
+		fq = get_ont_fq
+	output:
+		"fastq-ont/{sample}+filtlongPC{num}.fastq"
+	log: "fastq-ont/{sample}_filtlongPC{num}_log.txt"
+	shell:
+		"""
+		filtlong --min_length {filtlong_min_read_length} --keep_percent {wildcards.num} {input} > {output} 2>{log}
+		"""
+
+rule filtlongMBql:
 	threads: 1
 	wildcard_constraints:
 		mb = "[0-9]+",
@@ -115,14 +128,14 @@ rule filtlongMql:
 	input:
 		fq = get_ont_fq
 	output:
-		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight}.fastq"
-	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight}_log.txt"
+		"fastq-ont/{sample}+filtlongMB{mb},{qweight},{lweight}.fastq"
+	log: "fastq-ont/{sample}_filtlongMB{mb},{qweight},{lweight}_log.txt"
 	shell:
 		"""
 		filtlong --min_length {filtlong_min_read_length} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
 		"""
 
-rule filtlongMqln:
+rule filtlongMBqln:
 	threads: 1
 	wildcard_constraints:
 		mb = "[0-9]+",
@@ -132,8 +145,8 @@ rule filtlongMqln:
 	input:
 		fq = get_ont_fq
 	output:
-		"fastq-ont/{sample}+filtlong{mb},{qweight},{lweight},{readlen}.fastq"
-	log: "fastq-ont/{sample}_filtlong{mb},{qweight},{lweight},{readlen}_log.txt"
+		"fastq-ont/{sample}+filtlongMB{mb},{qweight},{lweight},{readlen}.fastq"
+	log: "fastq-ont/{sample}_filtlongMB{mb},{qweight},{lweight},{readlen}_log.txt"
 	shell:
 		"""
 		filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
