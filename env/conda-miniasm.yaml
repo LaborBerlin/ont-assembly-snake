@@ -1,0 +1,10 @@
+name: ont-assembly-snake-miniasm
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::miniasm=0.3_r179
+  - bioconda::minimap2>=2.22
+

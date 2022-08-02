@@ -7,7 +7,7 @@ using any combination of read filtering, assembly, long and short read polishing
 
 | read filtering | assembly | long read polishing | short read polishing | reference-based polishing |
 | --- | --- | --- | --- | --- |
-| [Filtlong](https://github.com/rrwick/Filtlong) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [Unicycler](https://github.com/rrwick/Unicycler) | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
+| [Filtlong](https://github.com/rrwick/Filtlong) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [miniasm](https://github.com/lh3/miniasm)<br/> [Unicycler](https://github.com/rrwick/Unicycler) | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
 
 
 ## Quick start
@@ -138,6 +138,13 @@ Default assembly, which includes two rounds of internal polishing with racon usi
 
 **`ravenX`**  
 Assembly with `X` rounds of internal polishing with racon. Setting `X` to 0 disables polishing altogether.
+
+### Miniasm
+
+Following keywords can be used to run the assembly with miniasm:
+
+**`miniasm`**  
+Default assembly. Miniasm does not do any polishing by itself.
 
 ### Unicycler
 

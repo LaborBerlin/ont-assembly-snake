@@ -152,6 +152,23 @@ rule filtlongMBqln:
 		filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
 		"""
 
+rule miniasm:
+  conda: "env/conda-miniasm.yaml"
+	threads: 10
+	input:
+		fqont = get_ont_fq
+	output:
+		fa = "assemblies/{sample}_miniasm/output.fa",
+		link = "assemblies/{sample}_miniasm.fa"
+	log: "assemblies/{sample}_miniasm/log.txt"
+	shell:
+		"""
+		minimap2 -x ava-ont -t {threads} {input} {input} > assemblies/{wildcards.sample}_miniasm/minimap2_overlap.paf 2>{log}
+		miniasm -f {input} assemblies/{wildcards.sample}_miniasm/minimap2_overlap.paf > assemblies/{wildcards.sample}_miniasm/minimap2_miniasm.gfa 2>>{log}
+		perl -lsane 'print ">$F[1]\n$F[2]" if $F[0] =~ /S/;' assemblies/{wildcards.sample}_miniasm/minimap2_miniasm.gfa > {output.fa} 2>>{log}
+		ln -sr {output.fa} {output.link}
+		"""
+
 rule unicycler:
   conda: "env/conda-unicycler.yaml"
 	threads: 10
@@ -171,7 +188,6 @@ rule unicycler:
 		cp assemblies/{wildcards.sample}_unicycler/assembly.fasta {output.fa} 2>>{log}
 		ln -sr {output.fa} {output.link}
 		"""
-
 
 #flye with default number of polishing rounds (=1 in flye v2.9)
 rule flye:
