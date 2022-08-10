@@ -3,6 +3,8 @@
 A snakemake-wrapper for easily creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data, and optionally Illumina data,
 using any combination of read filtering, assembly, long and short read polishing, and reference-based polishing.
 
+See the preprint here: [Snakemake Workflows for Long-read Bacterial Genome Assembly and Evaluation, Preprints.org 2022](https://www.preprints.org/manuscript/202208.0191/v1)
+
 ## Included programs
 
 | read filtering | assembly | long read polishing | short read polishing | reference-based polishing |
