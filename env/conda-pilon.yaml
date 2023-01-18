@@ -5,7 +5,7 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::bwa
-  - bioconda::samtools
-  - bioconda::pilon>=1.23
+  - bioconda::bwa=0.7.17
+  - bioconda::samtools=1.15
+  - bioconda::pilon=1.24
 

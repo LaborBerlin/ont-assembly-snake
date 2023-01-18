@@ -5,5 +5,5 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::homopolish>=0.3.3
+  - bioconda::homopolish=0.3.3
 
