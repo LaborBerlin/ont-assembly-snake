@@ -1,0 +1,39 @@
+name: check-conda-envs
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  check-conda-upgrades:
+    runs-on: "ubuntu-latest"
+
+    # this defines the repository folder in which the yaml files are located
+    env:
+      TARGET: "env"
+
+    steps:
+      # checkout this repository
+      - uses: actions/checkout@v3
+
+      # checkout pmenzel/gh-actions
+      - uses: actions/checkout@v3
+        with:
+          repository: pmenzel/gh-actions
+          ref: master
+          path: ./external/gh-actions
+
+      # https://github.com/marketplace/actions/setup-miniconda
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          channels: conda-forge,bioconda
+      - run: |
+          conda info
+
+      - name: Run gh-actions/check-conda-envs/check-all-conda-envs.sh
+        run: ./external/gh-actions/check-conda-envs/check-all-conda-envs.sh ${{env.TARGET}}
+
