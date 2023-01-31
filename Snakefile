@@ -153,7 +153,7 @@ rule filtlongMBqln:
 		"""
 
 rule miniasm:
-  conda: "env/conda-miniasm.yaml"
+	conda: "env/conda-miniasm.yaml"
 	threads: 10
 	input:
 		fqont = get_ont_fq
