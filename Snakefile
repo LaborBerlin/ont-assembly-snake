@@ -488,6 +488,29 @@ rule pilon:
         """
 
 
+rule polca:
+    conda:
+        "env/conda-masurca.yaml"
+    threads: 5
+    shadow:
+        "minimal"
+    input:
+        prev_fa="assemblies/{sample}_{assembly}/output.fa",
+        fq1=get_R1_fq,
+        fq2=get_R2_fq,
+    output:
+        fa="assemblies/{sample}_{assembly}+polca/output.fa",
+        link="assemblies/{sample}_{assembly}+polca.fa",
+    log:
+        "assemblies/{sample}_{assembly}+polca/log.txt",
+    shell:
+        """
+        polca.sh -t {threads} -a {input.prev_fa} -r '{input.fq1} {input.fq2}' >{log} 2>&1
+        mv output.fa.PolcaCorrected.fa {output.fa}
+        ln -sr {output.fa} {output.link}
+        """
+
+
 rule polypolish:
     conda:
         "env/conda-polypolish.yaml"

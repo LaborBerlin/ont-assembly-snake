@@ -1,0 +1,10 @@
+name: ont-assembly-snake-masurca
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::bwa=0.7.17
+  - bioconda::masurca=4.0.9
+
