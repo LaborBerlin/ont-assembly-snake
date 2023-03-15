@@ -6,5 +6,5 @@ channels:
   - anaconda
 dependencies:
   - bioconda::miniasm=0.3_r179
-  - bioconda::minimap2=2.22
+  - bioconda::minimap2=2.24
 

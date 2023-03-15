@@ -5,5 +5,5 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::raven-assembler=1.5.1
+  - bioconda::raven-assembler=1.8.1
 

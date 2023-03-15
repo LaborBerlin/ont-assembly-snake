@@ -5,5 +5,5 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::flye=2.9
+  - bioconda::flye=2.9.1
 

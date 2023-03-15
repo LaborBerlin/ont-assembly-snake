@@ -6,4 +6,5 @@ channels:
   - anaconda
 dependencies:
   - bioconda::proovframe=0.9.7
+  - bioconda::diamond=2.1.4
 
