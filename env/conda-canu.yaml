@@ -1,0 +1,9 @@
+name: ont-assembly-snake-canu
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::canu=2.2
+

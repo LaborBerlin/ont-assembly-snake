@@ -9,7 +9,7 @@ See the preprint here: [Snakemake Workflows for Long-read Bacterial Genome Assem
 
 | read filtering | assembly | long read polishing | short read polishing | reference-based polishing |
 | --- | --- | --- | --- | --- |
-| [Filtlong](https://github.com/rrwick/Filtlong) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [miniasm](https://github.com/lh3/miniasm)<br/> [Unicycler](https://github.com/rrwick/Unicycler) | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish)<br/> [POLCA](https://github.com/alekseyzimin/masurca#polca) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
+| [Filtlong](https://github.com/rrwick/Filtlong) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [miniasm](https://github.com/lh3/miniasm)<br/> [Unicycler](https://github.com/rrwick/Unicycler)<br/> [Canu](https://github.com/marbl/canu)  | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish)<br/> [POLCA](https://github.com/alekseyzimin/masurca#polca) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
 
 
 ## Quick start
@@ -152,6 +152,11 @@ Default assembly. Miniasm does not do any polishing by itself.
 
 **`unicycler`**  
 Unicycler does a hybrid assembly, i.e., both ONT and Illumina reads must be present in `fastq-ont` and `fastq-illumina`, respectively.
+
+### Canu
+
+**`canu`**  
+The Canu assembler requires to know the genome size (in Megabases) beforehand, use Snakemake option: `--config genome_size=5.2` (e.g. for 5.2 Mb)
 
 ### racon
 Following keywords can be used to polish an assembly using ONT reads:

@@ -26,6 +26,12 @@ if config.get("map_medaka_model", False):
     table = pd.read_csv(medaka_model_file, sep="\t", lineterminator="\n", header=None)
     map_medaka_model = dict(zip(table[0], table[1]))
 
+# this option is needed by Canu
+target_genome_size = None
+if config.get("genome_size", False):
+    target_genome_size = config["genome_size"]
+    print("Target genome size = " + str(target_genome_size) + "M")
+
 
 wildcard_constraints:
     sample="[^_]+",
@@ -72,6 +78,14 @@ if not references_protein and [
 ]:
     quit(
         "Error: must provide at least one reference protein file when using proovframe"
+    )
+
+# if any desired assembly uses Canu then need to provide target genome size
+if not target_genome_size and [
+    string for string in sample_assemblies if "_canu" in string
+]:
+    quit(
+        "Error: must provide target genome size when using Canu assembler, use option (e.g. for 5.2Mb): --config genome_size=5.2"
     )
 
 list_outputs = expand(
@@ -368,6 +382,25 @@ rule ravenX:
     shell:
         """
         raven --disable-checkpoints -p {wildcards.num} -t {threads} {input.fq} >{output.fa} 2>{log}
+        ln -sr {output.fa} {output.link}
+        """
+
+
+rule canu:
+    conda:
+        "env/conda-canu.yaml"
+    threads: 10
+    input:
+        fqont=get_ont_fq,
+    output:
+        fa="assemblies/{sample}_canu/output.fa",
+        link="assemblies/{sample}_canu.fa",
+    log:
+        "assemblies/{sample}_canu/log.txt",
+    shell:
+        """
+        canu -nanopore -d assemblies/{wildcards.sample}_canu/ -p output useGrid=false maxThreads={threads} genomeSize={target_genome_size}m {input.fqont} >>{log} 2>&1
+        cp assemblies/{wildcards.sample}_canu/output.contigs.fasta {output.fa} 2>>{log}
         ln -sr {output.fa} {output.link}
         """
 
