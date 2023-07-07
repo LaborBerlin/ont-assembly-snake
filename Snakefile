@@ -178,6 +178,7 @@ rule rasusaMB:
          rasusa --bases {wildcards.num}m -i {input} -o {output} 2>{log}
         """
 
+
 rule filtlongMB:
     threads: 1
     input:
