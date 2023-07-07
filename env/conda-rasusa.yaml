@@ -1,0 +1,9 @@
+name: ont-assembly-snake-rasusa
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::rasusa=0.7.1
+

@@ -43,11 +43,13 @@ wildcard_constraints:
 def get_ont_fq(wildcards):
     if "filtlong" in wildcards.sample:
         return "fastq-ont/" + wildcards.sample + ".fastq"
+    elif "rasusa" in wildcards.sample:
+        return "fastq-ont/" + wildcards.sample + ".fastq"
     else:
         return glob("fastq-ont/" + wildcards.sample + ".fastq*")
 
 
-# use split("+")[0] here for removing the +filtlong... suffices from sample names for Illumina reads
+# use split("+")[0] here for removing the +filtlong... or +rasusa... suffices from sample names for Illumina reads
 def get_R1_fq(wildcards):
     return glob("fastq-illumina/" + wildcards.sample.split("+")[0] + "_R1.fastq*")
 
@@ -160,6 +162,21 @@ rule filtlong:
         filtlong --min_length {filtlong_min_read_length} {input} > {output} 2>{log}
         """
 
+
+rule rasusaMB:
+    conda:
+        "env/conda-rasusa.yaml"
+    threads: 1
+    input:
+        fq=get_ont_fq,
+    output:
+        "fastq-ont/{sample}+rasusaMB{num}.fastq",
+    log:
+        "fastq-ont/{sample}_rasusaMB{num}_log.txt",
+    shell:
+        """
+         rasusa --bases {wildcards.num}m -i {input} -o {output} 2>{log}
+        """
 
 rule filtlongMB:
     threads: 1

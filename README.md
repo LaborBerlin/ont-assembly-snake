@@ -9,7 +9,7 @@ See the preprint here: [Snakemake Workflows for Long-read Bacterial Genome Assem
 
 | read filtering | assembly | long read polishing | short read polishing | reference-based polishing |
 | --- | --- | --- | --- | --- |
-| [Filtlong](https://github.com/rrwick/Filtlong) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [miniasm](https://github.com/lh3/miniasm)<br/> [Unicycler](https://github.com/rrwick/Unicycler)<br/> [Canu](https://github.com/marbl/canu)  | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish)<br/> [POLCA](https://github.com/alekseyzimin/masurca#polca) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
+| [Filtlong](https://github.com/rrwick/Filtlong)<br/> [Rasusa](https://github.com/mbhall88/rasusa) | [Flye](https://github.com/fenderglass/Flye)<br/> [raven](https://github.com/lbcb-sci/raven)<br/> [miniasm](https://github.com/lh3/miniasm)<br/> [Unicycler](https://github.com/rrwick/Unicycler)<br/> [Canu](https://github.com/marbl/canu)  | [racon](https://github.com/lbcb-sci/racon)<br/> [medaka](https://github.com/nanoporetech/medaka) | [pilon](https://github.com/broadinstitute/pilon/wiki)<br/> [Polypolish](https://github.com/rrwick/Polypolish)<br/> [POLCA](https://github.com/alekseyzimin/masurca#polca) | [Homopolish](https://github.com/ythuang0522/homopolish)<br/> [proovframe](https://github.com/thackl/proovframe) | 
 
 
 ## Quick start
@@ -113,6 +113,17 @@ As above, but the the minimum read length is explicitly specified by `n` and not
 The output is written to `fastq-ont/mysample+filtlongMB<m>,<q>,<l>,<n>.fastq`.
 
 When using any of the Filtlong keywords in a folder name, they must be followed by an underscore, followed by the keyword for the assembler.
+
+### Rasusa
+The ONT reads can be randomly subsampled prior to the assembly.
+
+The available keywords are:
+
+**`rasusaMB<m>`**  
+This will subsample the ONT reads to a total of `m` megabases.  
+The output is written to `fastq-ont/mysample+rasusaMB<m>.fastq`.
+
+When using any the Rasusa keyword in a folder name, it must be followed by an underscore, followed by the keyword for the assembler.
 
 ### Flye
 
