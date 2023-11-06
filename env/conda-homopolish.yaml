@@ -5,5 +5,7 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::homopolish=0.4.1
+  - bioconda::homopolish==0.4.1
+  - conda-forge::numpy==1.20.0
+  - conda-forge::python==3.8.15
 
