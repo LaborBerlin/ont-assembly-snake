@@ -80,6 +80,9 @@ snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20
 
 Assemblies created in each step are contained in the files `output.fa` in each folder and symlinked as `.fa` files in the `assemblies/` folder, see the example below.
 
+## Test dataset
+A test dataset containing a pair of ONT and Illumina sequencing data from the same bacterial isolate is available in the repository [ont-assembly-snake-testdata](https://github.com/pmenzel/ont-assembly-snake-testdata). See the instructions therein on how to download the dataset and run the ont-assembly-snake and [score-assemblies](https://github.com/pmenzel/score-assemblies) workflows.
+
 ## Included Programs
 
 ### Filtlong
