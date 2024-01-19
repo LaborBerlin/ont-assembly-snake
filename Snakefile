@@ -1,19 +1,28 @@
 from glob import glob
 import pandas as pd
 
-shell.executable("/bin/bash")
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+if config.get("run_score_assemblies", False):
+
+    module score_assemblies:
+        snakefile:
+            github("pmenzel/score-assemblies", path="Snakefile", branch="master")
+            #"score-assemblies/Snakefile"
+        config:
+            config
+
+    use rule * from score_assemblies as score_assemblies_*
+
+    ruleorder: proovframe_diamond_index > score_assemblies_diamond_ref_makedb
 
 
 filtlong_min_read_length = "1000"
 if config.get("filtlong_min_read_length", False):
     filtlong_min_read_length = config["filtlong_min_read_length"]
 print("filtlong min. read length = " + str(filtlong_min_read_length))
-
-# not needed anymore in flye 2.8
-# genome_size = "6m"
-# if config.get('genome_size',False):
-#  genome_size = config['genome_size']
-# print("genome size = " + genome_size)
 
 medaka_model = None
 if config.get("medaka_model", False):
