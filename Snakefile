@@ -10,7 +10,7 @@ if config.get("run_score_assemblies", False):
     module score_assemblies:
         snakefile:
             github("pmenzel/score-assemblies", path="Snakefile", branch="master")
-            #"score-assemblies/Snakefile"
+            #  "score-assemblies/Snakefile"
         config:
             config
 
@@ -74,6 +74,10 @@ def get_R2_fq(wildcards):
 (sample_assemblies,) = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
 # ignore symlinks in assemblies/folder, e.g. sample_flye.fa -> assemblies/sample_flye/output.fa
 sample_assemblies = [a for a in sample_assemblies if not re.search("\.fa", a)]
+
+# if config files with list of assemblies is given, then use this instead of folders in assemblies/
+if config.get("assemblies", False):
+    sample_assemblies = list(set(config["assemblies"]))
 
 # if any desired assembly requires homopolish then at least one reference genome should be provided
 if not references and [
