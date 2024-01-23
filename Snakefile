@@ -162,20 +162,6 @@ rule all:
         list_outputs_links_proovframe,
 
 
-rule filtlong:
-    threads: 1
-    input:
-        fq=get_ont_fq,
-    output:
-        "fastq-ont/{sample}+filtlong.fastq",
-    log:
-        "fastq-ont/{sample}_filtlong_log.txt",
-    shell:
-        """
-        filtlong --min_length {filtlong_min_read_length} {input} > {output} 2>{log}
-        """
-
-
 rule rasusaMB:
     conda:
         "env/conda-rasusa.yaml"
@@ -186,9 +172,27 @@ rule rasusaMB:
         "fastq-ont/{sample}+rasusaMB{num}.fastq",
     log:
         "fastq-ont/{sample}_rasusaMB{num}_log.txt",
+    benchmark:
+        "benchmark/{sample}_rasusaMB{num}.txt"
     shell:
         """
-         rasusa --bases {wildcards.num}m -i {input} -o {output} 2>{log}
+        rasusa --bases {wildcards.num}m -i {input} -o {output} 2>{log}
+        """
+
+
+rule filtlong:
+    threads: 1
+    input:
+        fq=get_ont_fq,
+    output:
+        "fastq-ont/{sample}+filtlong.fastq",
+    log:
+        "fastq-ont/{sample}_filtlong_log.txt",
+    benchmark:
+        "benchmark/{sample}_filtlong.txt"
+    shell:
+        """
+        filtlong --min_length {filtlong_min_read_length} {input} > {output} 2>{log}
         """
 
 
@@ -200,6 +204,8 @@ rule filtlongMB:
         "fastq-ont/{sample}+filtlongMB{num}.fastq",
     log:
         "fastq-ont/{sample}_filtlongMB{num}_log.txt",
+    benchmark:
+        "benchmark/{sample}_filtlongMB{num}.txt"
     shell:
         """
         filtlong --min_length {filtlong_min_read_length} -t {wildcards.num}000000 {input} > {output} 2>{log}
@@ -215,6 +221,8 @@ rule filtlongPC:
         "fastq-ont/{sample}+filtlongPC{num}.fastq",
     log:
         "fastq-ont/{sample}_filtlongPC{num}_log.txt",
+    benchmark:
+        "benchmark/{sample}_filtlongPC{num}.txt"
     shell:
         """
         filtlong --min_length {filtlong_min_read_length} --keep_percent {wildcards.num} {input} > {output} 2>{log}
@@ -233,6 +241,8 @@ rule filtlongMBql:
         "fastq-ont/{sample}+filtlongMB{mb},{qweight},{lweight}.fastq",
     log:
         "fastq-ont/{sample}_filtlongMB{mb},{qweight},{lweight}_log.txt",
+    benchmark:
+        "benchmark/{sample}_filtlongMB{mb},{qweight},{lweight}.txt"
     shell:
         """
         filtlong --min_length {filtlong_min_read_length} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
@@ -252,6 +262,8 @@ rule filtlongMBqln:
         "fastq-ont/{sample}+filtlongMB{mb},{qweight},{lweight},{readlen}.fastq",
     log:
         "fastq-ont/{sample}_filtlongMB{mb},{qweight},{lweight},{readlen}_log.txt",
+    benchmark:
+        "benchmark/{sample}_filtlongMB{mb},{qweight},{lweight},{readlen}.txt"
     shell:
         """
         filtlong --min_length {wildcards.readlen} --mean_q_weight {wildcards.qweight} --length_weight {wildcards.lweight}  -t {wildcards.mb}000000 {input} > {output} 2>{log}
@@ -269,6 +281,8 @@ rule miniasm:
         link="assemblies/{sample}_miniasm.fa",
     log:
         "assemblies/{sample}_miniasm/log.txt",
+    benchmark:
+        "benchmark/{sample}_miniasm.txt"
     shell:
         """
         minimap2 -x ava-ont -t {threads} {input} {input} > assemblies/{wildcards.sample}_miniasm/minimap2_overlap.paf 2>{log}
@@ -291,6 +305,8 @@ rule unicycler:
         link="assemblies/{sample}_unicycler.fa",
     log:
         "assemblies/{sample}_unicycler/log.txt",
+    benchmark:
+        "benchmark/{sample}_unicycler.txt"
     shell:
         """
         # del spades folder if already exists (e.g. when workflow was canceled), so that it does not warn about it upon restart
@@ -313,6 +329,8 @@ rule flye:
         link="assemblies/{sample}_flye.fa",
     log:
         "assemblies/{sample}_flye/log.txt",
+    benchmark:
+        "benchmark/{sample}_flye.txt"
     shell:
         """
         flye --nano-raw {input.fq} -o assemblies/{wildcards.sample}_flye/ -t {threads} 2>{log}
@@ -332,6 +350,8 @@ rule flyeX:
         link="assemblies/{sample}_flye{num}.fa",
     log:
         "assemblies/{sample}_flye{num}/log.txt",
+    benchmark:
+        "benchmark/{sample}_flye{num}.txt"
     shell:
         """
         flye --nano-raw {input.fq} -o assemblies/{wildcards.sample}_flye{wildcards.num}/ -t {threads} -i {wildcards.num} 2>{log}
@@ -352,6 +372,8 @@ rule flyehq:
         link="assemblies/{sample}_flyehq.fa",
     log:
         "assemblies/{sample}_flyehq/log.txt",
+    benchmark:
+        "benchmark/{sample}_flyehq.txt"
     shell:
         """
         flye --nano-hq {input.fq} -o assemblies/{wildcards.sample}_flyehq/ -t {threads} 2>{log}
@@ -371,6 +393,8 @@ rule flyehqX:
         link="assemblies/{sample}_flyehq{num}.fa",
     log:
         "assemblies/{sample}_flyehq{num}/log.txt",
+    benchmark:
+        "benchmark/{sample}_flyehq{num}.txt"
     shell:
         """
         flye --nano-hq {input.fq} -o assemblies/{wildcards.sample}_flyehq{wildcards.num}/ -t {threads} -i {wildcards.num} 2>{log}
@@ -391,6 +415,8 @@ rule raven:
         link="assemblies/{sample}_raven.fa",
     log:
         "assemblies/{sample}_raven/log.txt",
+    benchmark:
+        "benchmark/{sample}_raven.txt"
     shell:
         """
         raven --disable-checkpoints -t {threads} {input.fq} >{output.fa} 2>{log}
@@ -410,6 +436,8 @@ rule ravenX:
         link="assemblies/{sample}_raven{num}.fa",
     log:
         "assemblies/{sample}_raven{num}/log.txt",
+    benchmark:
+        "benchmark/{sample}_raven{num}.txt"
     shell:
         """
         raven --disable-checkpoints -p {wildcards.num} -t {threads} {input.fq} >{output.fa} 2>{log}
@@ -428,6 +456,8 @@ rule canu:
         link="assemblies/{sample}_canu.fa",
     log:
         "assemblies/{sample}_canu/log.txt",
+    benchmark:
+        "benchmark/{sample}_canu.txt"
     shell:
         """
         canu -nanopore -d assemblies/{wildcards.sample}_canu/ -p output useGrid=false maxThreads={threads} genomeSize={target_genome_size}m {input.fqont} >>{log} 2>&1
@@ -450,6 +480,8 @@ rule racon:
         sam=temp("assemblies/{sample}_{assembly}+racon/map.sam"),
     log:
         "assemblies/{sample}_{assembly}+racon/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+racon.txt"
     shell:
         """
         minimap2 -ax map-ont -t {threads} {input.prev_fa} {input.fq} > {output.sam} 2>{log}
@@ -471,6 +503,8 @@ rule raconX:
         link="assemblies/{sample}_{assembly}+racon{num}.fa",
     log:
         "assemblies/{sample}_{assembly}+racon{num}/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+racon{num}.txt"
     shell:
         """
         DIR_temp=$(mktemp -d --suffix=.raconX)
@@ -519,6 +553,8 @@ rule medaka:
         model=get_model_for_sample,
     log:
         "assemblies/{sample}_{assembly}+medaka/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+medaka.txt"
     shell:
         """
         medaka_consensus -f -i {input.fq} -d {input.prev_fa} -o assemblies/{wildcards.sample}_{wildcards.assembly}+medaka -t {threads} {params.model} >{log} 2>&1
@@ -541,6 +577,8 @@ rule pilon:
         link="assemblies/{sample}_{assembly}+pilon.fa",
     log:
         "assemblies/{sample}_{assembly}+pilon/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+pilon.txt"
     shell:
         """
         bwa index -p assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/bwa_index {input.prev_fa} >{log} 2>&1
@@ -567,6 +605,8 @@ rule polca:
         link="assemblies/{sample}_{assembly}+polca.fa",
     log:
         "assemblies/{sample}_{assembly}+polca/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+polca.txt"
     shell:
         """
         polca.sh -t {threads} -a {input.prev_fa} -r '{input.fq1} {input.fq2}' >{log} 2>&1
@@ -588,6 +628,8 @@ rule polypolish:
         link="assemblies/{sample}_{assembly}+polypolish.fa",
     log:
         "assemblies/{sample}_{assembly}+polypolish/log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+polypolish.txt"
     shell:
         """
         bwa index -p assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.prev_fa} >{log} 2>&1
@@ -611,6 +653,8 @@ rule homopolish:
         link="assemblies/{sample}_{assembly}+homopolish{ref}.fa",
     log:
         "assemblies/{sample}_{assembly}+homopolish/{ref}_log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+homopolish-{ref}.txt"
     shell:
         """
         DIR_temp=$(mktemp -d --suffix=.raconX)
@@ -631,6 +675,8 @@ rule proovframe_diamond_index:
         "references-protein/{ref}.dmnd",
     log:
         "references-protein/{ref}-diamond-index.txt",
+    benchmark:
+        "benchmark/{ref}diamond-index.txt"
     shell:
         """
         diamond makedb -p {threads} --in {input} --db {output} >{log} 2>&1
@@ -650,6 +696,8 @@ rule proovframe:
         link="assemblies/{sample}_{assembly}+proovframe{ref}.fa",
     log:
         "assemblies/{sample}_{assembly}+proovframe/{ref}_log.txt",
+    benchmark:
+        "benchmark/{sample}_{assembly}+proovframe-{ref}.txt"
     shell:
         """
         proovframe map -d {input.ref} -o {output.tsv} {input.prev_fa} >{log} 2>&1
