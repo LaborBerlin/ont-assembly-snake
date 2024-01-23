@@ -1,6 +1,6 @@
 # ont-assembly-snake
 
-A snakemake-wrapper for easily creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data, and optionally Illumina data,
+A Snakemake wrapper for easily creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data, and optionally Illumina data,
 using any combination of read filtering, assembly, long and short read polishing, and reference-based polishing.
 
 See the preprint here: [Snakemake Workflows for Long-read Bacterial Genome Assembly and Evaluation, Preprints.org 2022](https://www.preprints.org/manuscript/202208.0191/v1)
@@ -59,7 +59,7 @@ conda activate ont-assembly-snake
 First, prepare a folder called `fastq-ont/` containing the ONT sequencing reads as
 one `.fastq` or `.fastq.gz` file per sample, e.g. `fastq-ont/sample1.fastq.gz`.
 
-Unicycler and some polishing tools additonally use paired-end Illumina reads, which need to be placed in the folder `fastq-illumina/` using `_R[12].fastq` or `_R[12].fastq.gz` suffixes, e.g. `fastq-illumina/sample1_R1.fastq.gz` and `fastq-illumina/sample1_R2.fastq.gz`.
+Unicycler and some polishing tools additionally use paired-end Illumina reads, which need to be placed in the folder `fastq-illumina/` using `_R[12].fastq` or `_R[12].fastq.gz` suffixes, e.g. `fastq-illumina/sample1_R1.fastq.gz` and `fastq-illumina/sample1_R2.fastq.gz`.
 
 Next, create a folder `assemblies` and in there, create empty folders specifying
 the desired combinations of read filtering, assembly, and polishing steps by using specific keywords for each program, see below.
@@ -73,13 +73,6 @@ NB: This also means that sample names must not contain underscores.
 
 After the keyword for the assembler follow the keywords for one ore more polishing steps, all separated by `+`.
 
-After making the desired subfolders in `assemblies/`, run the workflow, e.g. with 20 threads:
-```
-snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20
-```
-
-Assemblies created in each step are contained in the files `output.fa` in each folder and symlinked as `.fa` files in the `assemblies/` folder, see the example below.
-
 As an alternative to create subfolders within `assemblies/`, it is also possible to use a YAML file to list the desired assemblies, e.g. in a file called `samples.yaml`:
 ```
 assemblies:
@@ -88,6 +81,17 @@ assemblies:
   - mysample_raven2+medaka+pilon
 ```
 and add the argument `--configfile samples.yaml` to the Snakemake command line.
+
+Finally, after making the desired subfolders in `assemblies/` or making the config file, run the workflow, e.g. with 20 threads:
+```
+snakemake -s /opt/software/ont-assembly-snake/Snakefile --use-conda --cores 20
+```
+
+### Workflow output
+
+The assemblies created in each step are contained in the files `output.fa` (FASTA format) in each of the previously created folders within `assemblies/`.
+Additionally, a symlink named `<FOLDER_NAME>.fa` links to the final output file of each step, i.e. `assemblies/<FOLDER_NAME>/output.fa`, also see the example below.  
+The log files of running the individual Snakemake rules are located in `assemblies/<FOLDER_NAME>/*log.txt`.
 
 ## Test dataset
 A test dataset containing a pair of ONT and Illumina sequencing data from the same bacterial isolate is available in the repository [ont-assembly-snake-testdata](https://github.com/pmenzel/ont-assembly-snake-testdata). See the instructions therein on how to download the dataset and run the ont-assembly-snake and [score-assemblies](https://github.com/pmenzel/score-assemblies) workflows.
@@ -103,7 +107,7 @@ The available keywords are:
 This will filter the ONT reads in `fastq-ont/mysample.fastq` and keep only
 reads longer than 1000 bases; using the Filtlong option `--min_length`. The filtered read set is written to
 `fastq-ont/mysample+filtlong.fastq`. The length can be changed using the
-snakemake configuration option `filtlong_min_read_length`.
+Snakemake configuration option `filtlong_min_read_length`.
 
 **`filtlongPC<p>`**  
 This will filter the reads to only include the top `p` percent of megabases from reads with highest average quality using
@@ -196,10 +200,10 @@ Run racon polishing iteratively `X` times.
 Medaka polishes the assembly using the ONT reads, but also requires the name of
 the Medaka model to be used, which depends on the flow cell and basecalling that were used for creating the reads.
 
-The model name can either be set globally for all samples using the snakemake configuration option `medaka_model`,
-or by supplying a tab-separated file with two columns that maps sample names to medaka models using the snakemake configuration option `map_medaka_model`.
+The model name can either be set globally for all samples using the Snakemake configuration option `medaka_model`,
+or by supplying a tab-separated file with two columns that maps sample names to medaka models using the Snakemake configuration option `map_medaka_model`.
 
-Options are specified using snakemake's `--config` parameter, for example:
+Options are specified using snake make's `--config` parameter, for example:
 
 ```
 snakemake /opt/software/ont-assembly-snake/Snakefile --cores 20 --config map_medaka_model=map_medaka.tsv
@@ -229,16 +233,16 @@ POLCA polishes an assembly using Illumina reads, which must be located in the `f
 ### Homopolish
 
 **`homopolish`**  
-Homopolish does reference-based polishing based on one ore more provided reference genomes in fasta format located in 
+Homopolish does reference-based polishing based on one ore more provided reference genomes in FASTA format located in 
 `references/NAME1.fa`, `references/NAME2.fa`, etc., where `NAME1` and `NAME2` can be any string.
 Snakemake will create output files `...+homopolish/output_NAME1.fa`, `...+homopolish/output_NAME1.fa`, etc., containing the polished assemblies.
 
-When using homopolish, it must be the last keyword in the folder name.
+When using Homopolish, it must be the last keyword in the folder name.
 
 ### proovframe
 
 **`proovframe`**  
-Proovframe does reference-based polishing based on one ore more provided reference proteomes in fasta format containing the amino acid sequences located in 
+Proovframe does reference-based polishing based on one ore more provided reference proteomes in FASTA format containing the amino acid sequences located in 
 `references-protein/NAME1.faa`, `references-protein/NAME2.faa`, etc., where `NAME1` and `NAME2` can be any string.
 Snakemake will create output files `...+proovframe/output_NAME1.fa`, `...+proovframe/output_NAME1.fa`, etc., containing the polished assemblies.
 
@@ -248,8 +252,8 @@ When using proovframe, it must be the last keyword in the folder name.
 This example contains two samples with ONT sequencing reads and Illumina reads
 for sample 2 only.  
 
-For sample 1, the assembly should be done with flye (including the default single round of
-polishing), followed by polishing the assembly with racon (twice), medaka, and eventually homopolish, which will use the E. coli genome in the file `references/Ecoli.faa`.  
+For sample 1, the assembly should be done with Flye (including the default single round of
+polishing), followed by polishing the assembly with racon (twice), medaka, and eventually Homopolish, which will use the E. coli genome in the file `references/Ecoli.faa`.  
 In another assembly, we also want to filter the ONT reads of sample 1 to only include the highest quality reads up to a total of 500Mb
 using Filtlong and apply the same assembly and polishing protocol.
 
