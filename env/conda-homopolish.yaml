@@ -5,7 +5,11 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::homopolish==0.4.1
-  - conda-forge::numpy==1.20.0
-  - conda-forge::python==3.8.15
+  - bioconda::homopolish==0.3.3
+  - conda-forge::numpy==1.18.5
+  - pandas==0.23.4
+  - pyarrow==0.17.1
+  - python==3.7.12
+  - scikit-learn==0.21.3
+  - scipy==1.7.3
 
