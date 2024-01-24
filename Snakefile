@@ -9,8 +9,8 @@ if config.get("run_score_assemblies", False):
 
     module score_assemblies:
         snakefile:
-            github("pmenzel/score-assemblies", path="Snakefile", branch="master")
             #  "score-assemblies/Snakefile"
+            github("pmenzel/score-assemblies", path="Snakefile", branch="master")
         config:
             config
 
@@ -273,11 +273,15 @@ rule filtlongMBqln:
 rule miniasm:
     conda:
         "env/conda-miniasm.yaml"
-    threads: 10
+    threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fqont=get_ont_fq,
     output:
         fa="assemblies/{sample}_miniasm/output.fa",
+        paf=temp("assemblies/{sample}_miniasm/minimap2_overlap.paf"),
+        gfa="assemblies/{sample}_miniasm/minimap2_miniasm.gfa",
         link="assemblies/{sample}_miniasm.fa",
     log:
         "assemblies/{sample}_miniasm/log.txt",
@@ -285,9 +289,9 @@ rule miniasm:
         "benchmark/{sample}_miniasm.txt"
     shell:
         """
-        minimap2 -x ava-ont -t {threads} {input} {input} > assemblies/{wildcards.sample}_miniasm/minimap2_overlap.paf 2>{log}
-        miniasm -f {input} assemblies/{wildcards.sample}_miniasm/minimap2_overlap.paf > assemblies/{wildcards.sample}_miniasm/minimap2_miniasm.gfa 2>>{log}
-        perl -lsane 'print ">$F[1]\n$F[2]" if $F[0] =~ /S/;' assemblies/{wildcards.sample}_miniasm/minimap2_miniasm.gfa > {output.fa} 2>>{log}
+        minimap2 -x ava-ont -t {threads} {input} {input} > {output.paf} 2>{log}
+        miniasm -f {input} {output.paf} > {output..gfa} 2>>{log}
+        perl -lsane 'print ">$F[1]\n$F[2]" if $F[0] =~ /S/;' {output.gfa} > {output.fa} 2>>{log}
         ln -sr {output.fa} {output.link}
         """
 
@@ -296,6 +300,8 @@ rule unicycler:
     conda:
         "env/conda-unicycler.yaml"
     threads: 10
+    resources:
+        mem_mb=12000,
     input:
         fqont=get_ont_fq,
         fq1=get_R1_fq,
@@ -322,6 +328,8 @@ rule flye:
     conda:
         "env/conda-flye.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fq=get_ont_fq,
     output:
@@ -343,6 +351,8 @@ rule flyeX:
     conda:
         "env/conda-flye.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fq=get_ont_fq,
     output:
@@ -365,6 +375,8 @@ rule flyehq:
     conda:
         "env/conda-flye.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fq=get_ont_fq,
     output:
@@ -386,6 +398,8 @@ rule flyehqX:
     conda:
         "env/conda-flye.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fq=get_ont_fq,
     output:
@@ -408,6 +422,8 @@ rule raven:
     conda:
         "env/conda-raven.yaml"
     threads: 5
+    resources:
+        mem_mb=5000,
     input:
         fq=get_ont_fq,
     output:
@@ -429,6 +445,8 @@ rule ravenX:
     conda:
         "env/conda-raven.yaml"
     threads: 5
+    resources:
+        mem_mb=5000,
     input:
         fq=get_ont_fq,
     output:
@@ -448,7 +466,9 @@ rule ravenX:
 rule canu:
     conda:
         "env/conda-canu.yaml"
-    threads: 10
+    threads: 5
+    resources:
+        mem_mb=12000,
     input:
         fqont=get_ont_fq,
     output:
@@ -543,6 +563,8 @@ rule medaka:
     conda:
         "env/conda-medaka.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         prev_fa="assemblies/{sample}_{assembly}/output.fa",
         fq=get_ont_fq,
@@ -567,12 +589,14 @@ rule pilon:
     conda:
         "env/conda-pilon.yaml"
     threads: 5
+    resources:
+        mem_mb=12000,
     input:
         prev_fa="assemblies/{sample}_{assembly}/output.fa",
         fq1=get_R1_fq,
         fq2=get_R2_fq,
     output:
-        bam="assemblies/{sample}_{assembly}+pilon/map.bam",
+        bam=temp("assemblies/{sample}_{assembly}+pilon/map.bam"),
         fa="assemblies/{sample}_{assembly}+pilon/output.fa",
         link="assemblies/{sample}_{assembly}+pilon.fa",
     log:
@@ -584,7 +608,7 @@ rule pilon:
         bwa index -p assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/bwa_index {input.prev_fa} >{log} 2>&1
         bwa mem -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/bwa_index {input.fq1} {input.fq2} 2>>{log} | samtools sort -o {output.bam} - 2>>{log}
         samtools index {output.bam} 2>>{log}
-        pilon -Xmx60G --genome {input.prev_fa} --frags {output.bam} --outdir assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/ --output pilon --changes --vcf >>{log} 2>&1
+        pilon -Xmx60G --genome {input.prev_fa} --frags {output.bam} --outdir assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/ --output pilon --changes >>{log} 2>&1
         mv assemblies/{wildcards.sample}_{wildcards.assembly}+pilon/pilon.fasta {output.fa}
         ln -sr {output.fa} {output.link}
         """
@@ -594,6 +618,8 @@ rule polca:
     conda:
         "env/conda-masurca.yaml"
     threads: 5
+    resources:
+        mem_mb=5000,
     shadow:
         "minimal"
     input:
@@ -619,11 +645,17 @@ rule polypolish:
     conda:
         "env/conda-polypolish.yaml"
     threads: 5
+    resources:
+        mem_mb=4000,
     input:
         prev_fa="assemblies/{sample}_{assembly}/output.fa",
         fq1=get_R1_fq,
         fq2=get_R2_fq,
     output:
+        samR1=temp("assemblies/{sample}_{assembly}+polypolish/alignments_R1.sam"),
+        samR2=temp("assemblies/{sample}_{assembly}+polypolish/alignments_R2.sam"),
+        filtered_samR1=temp("assemblies/{sample}_{assembly}+polypolish/filtered_R1.sam"),
+        filtered_samR2=temp("assemblies/{sample}_{assembly}+polypolish/filtered_R2.sam"),
         fa="assemblies/{sample}_{assembly}+polypolish/output.fa",
         link="assemblies/{sample}_{assembly}+polypolish.fa",
     log:
@@ -633,10 +665,10 @@ rule polypolish:
     shell:
         """
         bwa index -p assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.prev_fa} >{log} 2>&1
-        bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq1} > assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R1.sam 2>>{log}
-        bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq2} > assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R2.sam 2>>{log}
-        polypolish_insert_filter.py --in1 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R1.sam --in2 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/alignments_R2.sam --out1 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R1.sam --out2 assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R2.sam >>{log} 2>&1
-        polypolish {input.prev_fa} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R1.sam assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/filtered_R2.sam > {output.fa} 2>>{log}
+        bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq1} > {output.samR1} 2>>{log}
+        bwa mem -a -t {threads} assemblies/{wildcards.sample}_{wildcards.assembly}+polypolish/bwa_index {input.fq2} > {output.samR2} 2>>{log}
+        polypolish_insert_filter.py --in1 {output.samR1} --in2 {output.samR2} --out1 {output.filtered_samR1} --out2 {output.filtered_samR2} >>{log} 2>&1
+        polypolish {input.prev_fa} {output.filtered_samR1} {output.filtered_samR2} > {output.fa} 2>>{log}
         ln -sr {output.fa} {output.link}
         """
 
@@ -687,6 +719,8 @@ rule proovframe:
     conda:
         "env/conda-proovframe.yaml"
     threads: 1
+    resources:
+        mem_mb=4000,
     input:
         prev_fa="assemblies/{sample}_{assembly}/output.fa",
         ref="references-protein/{ref}.dmnd",
