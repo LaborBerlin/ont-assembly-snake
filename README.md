@@ -183,7 +183,8 @@ Unicycler does a hybrid assembly, i.e., both ONT and Illumina reads must be pres
 ### Canu
 
 **`canu`**  
-The Canu assembler requires to know the genome size (in Megabases) beforehand, use Snakemake option: `--config genome_size=5.2` (e.g. for 5.2 Mb)
+The Canu assembler requires to know the genome size (in Megabases) beforehand, use Snakemake option: `--config genome_size=5.2` (e.g. for 5.2 Mb)  
+NB: Canu can take a long time to complete the assembly, up to several hours!
 
 ### racon
 Following keywords can be used to polish an assembly using ONT reads:

@@ -290,7 +290,7 @@ rule miniasm:
     shell:
         """
         minimap2 -x ava-ont -t {threads} {input} {input} > {output.paf} 2>{log}
-        miniasm -f {input} {output.paf} > {output..gfa} 2>>{log}
+        miniasm -f {input} {output.paf} > {output.gfa} 2>>{log}
         perl -lsane 'print ">$F[1]\n$F[2]" if $F[0] =~ /S/;' {output.gfa} > {output.fa} 2>>{log}
         ln -sr {output.fa} {output.link}
         """
