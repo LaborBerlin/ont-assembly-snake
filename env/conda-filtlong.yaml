@@ -1,0 +1,9 @@
+name: ont-assembly-snake-filtlong
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - anaconda
+dependencies:
+  - bioconda::filtlong=0.2.1
+

@@ -181,6 +181,8 @@ rule rasusaMB:
 
 
 rule filtlong:
+    conda:
+        "env/conda-filtlong.yaml"
     threads: 1
     input:
         fq=get_ont_fq,
@@ -197,6 +199,8 @@ rule filtlong:
 
 
 rule filtlongMB:
+    conda:
+        "env/conda-filtlong.yaml"
     threads: 1
     input:
         fq=get_ont_fq,
@@ -214,6 +218,8 @@ rule filtlongMB:
 
 # for keeping num PerCent of the bases
 rule filtlongPC:
+    conda:
+        "env/conda-filtlong.yaml"
     threads: 1
     input:
         fq=get_ont_fq,
@@ -230,6 +236,8 @@ rule filtlongPC:
 
 
 rule filtlongMBql:
+    conda:
+        "env/conda-filtlong.yaml"
     threads: 1
     wildcard_constraints:
         mb="[0-9]+",
@@ -250,6 +258,8 @@ rule filtlongMBql:
 
 
 rule filtlongMBqln:
+    conda:
+        "env/conda-filtlong.yaml"
     threads: 1
     wildcard_constraints:
         mb="[0-9]+",
