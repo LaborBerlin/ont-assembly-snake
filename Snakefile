@@ -479,6 +479,8 @@ rule canu:
     threads: 5
     resources:
         mem_mb=12000,
+    shadow:
+        "minimal"
     input:
         fqont=get_ont_fq,
     output:

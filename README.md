@@ -215,6 +215,8 @@ sample1     r941_min_high_g330
 sample2     r941_min_high_g351
 ```
 
+If no model is specified, Medaka will use the `r941_min_hac_g507` model by default.
+
 ### pilon
 
 **`pilon`**  
