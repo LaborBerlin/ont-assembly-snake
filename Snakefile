@@ -43,10 +43,10 @@ if config.get("genome_size", False):
 
 
 wildcard_constraints:
-    sample="[^_]+",
-    assembly="[^_]+",
-    sample_assembly="[^/]+",
-    num="[0-9]+",
+    sample=r"[^_]+",
+    assembly=r"[^_]+",
+    sample_assembly=r"[^/]+",
+    num=r"[0-9]+",
 
 
 def get_ont_fq(wildcards):
@@ -67,13 +67,13 @@ def get_R2_fq(wildcards):
     return glob("fastq-illumina/" + wildcards.sample.split("+")[0] + "_R2.fastq*")
 
 
-(references,) = glob_wildcards("references/{ref,[^/\\\\]+}.fa")
+(references,) = glob_wildcards(r"references/{ref,[^/\\]+}.fa")
 
-(references_protein,) = glob_wildcards("references-protein/{ref,[^/\\\\]+}.faa")
+(references_protein,) = glob_wildcards(r"references-protein/{ref,[^/\\]+}.faa")
 
-(sample_assemblies,) = glob_wildcards("assemblies/{sample_assembly,[^/]+}/")
+(sample_assemblies,) = glob_wildcards(r"assemblies/{sample_assembly,[^/]+}/")
 # ignore symlinks in assemblies/folder, e.g. sample_flye.fa -> assemblies/sample_flye/output.fa
-sample_assemblies = [a for a in sample_assemblies if not re.search("\.fa", a)]
+sample_assemblies = [a for a in sample_assemblies if not re.search(r"\.fa", a)]
 
 # if config files with list of assemblies is given, then use this instead of folders in assemblies/
 if config.get("assemblies", False):
@@ -111,7 +111,7 @@ list_outputs_links = expand(
 )
 # remove homopolish and proovframe assemblies from default list
 list_outputs = [
-    i for i in list_outputs if not re.search("homopolish|proovframe", i, re.IGNORECASE)
+    i for i in list_outputs if not re.search(r"homopolish|proovframe", i, re.IGNORECASE)
 ]
 list_outputs_links = [
     i
@@ -124,14 +124,14 @@ list_outputs_homopolish = expand(
     "assemblies/{sample_assembly}/output_{ref}.fa",
     ref=references,
     sample_assembly=[
-        i for i in sample_assemblies if re.search("homopolish$", i, re.IGNORECASE)
+        i for i in sample_assemblies if re.search(r"homopolish$", i, re.IGNORECASE)
     ],
 )
 list_outputs_links_homopolish = expand(
     "assemblies/{sample_assembly}{ref}.fa",
     ref=references,
     sample_assembly=[
-        i for i in sample_assemblies if re.search("homopolish$", i, re.IGNORECASE)
+        i for i in sample_assemblies if re.search(r"homopolish$", i, re.IGNORECASE)
     ],
 )
 
@@ -140,14 +140,14 @@ list_outputs_proovframe = expand(
     "assemblies/{sample_assembly}/output_{ref}.fa",
     ref=references_protein,
     sample_assembly=[
-        i for i in sample_assemblies if re.search("proovframe$", i, re.IGNORECASE)
+        i for i in sample_assemblies if re.search(r"proovframe$", i, re.IGNORECASE)
     ],
 )
 list_outputs_links_proovframe = expand(
     "assemblies/{sample_assembly}{ref}.fa",
     ref=references_protein,
     sample_assembly=[
-        i for i in sample_assemblies if re.search("proovframe$", i, re.IGNORECASE)
+        i for i in sample_assemblies if re.search(r"proovframe$", i, re.IGNORECASE)
     ],
 )
 
