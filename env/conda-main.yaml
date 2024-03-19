@@ -5,6 +5,5 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - bioconda::snakemake>=7.24,<8
-  - bioconda::filtlong=0.2.1
+  - bioconda::snakemake>=8.8.0
 
