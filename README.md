@@ -1,9 +1,9 @@
 # ont-assembly-snake
 
-A Snakemake wrapper for easily creating *de novo* bacterial genome assemblies from Oxford Nanopore (ONT) sequencing data, and optionally Illumina data,
+A Snakemake wrapper for easily creating *de novo* bacterial isolate genome assemblies from Oxford Nanopore (ONT) sequencing data, and optionally Illumina data,
 using any combination of read filtering, assembly, long and short read polishing, and reference-based polishing.
 
-See the preprint here: [Snakemake Workflows for Long-read Bacterial Genome Assembly and Evaluation, Preprints.org 2022](https://www.preprints.org/manuscript/202208.0191/v1)
+The workflow is published in [Snakemake workflows for long-read bacterial genome assembly and evaluation](https://gigabytejournal.com/articles/116) in _GigaByte_.
 
 ## Included programs
 
