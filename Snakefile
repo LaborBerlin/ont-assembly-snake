@@ -10,7 +10,7 @@ if config.get("run_score_assemblies", False):
     module score_assemblies:
         snakefile:
             #  "score-assemblies/Snakefile"
-            github("pmenzel/score-assemblies", path="Snakefile", branch="master")
+            github("LaborBerlin/score-assemblies", path="Snakefile", branch="master")
         config:
             config
 
